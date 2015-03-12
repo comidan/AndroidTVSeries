@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TVDB_Test</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <array name="menu_titles">
+        <item>Search TV Series</item>
+        <item>My TV Series</item>
+    </array>
+    <string-array name="tabs">
+        <item>Episodes</item>
+        <item>Info</item>
+        <item>Details</item>
+    </string-array>
+</resources>
