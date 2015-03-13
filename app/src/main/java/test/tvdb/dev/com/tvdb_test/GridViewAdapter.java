@@ -87,8 +87,8 @@ public class GridViewAdapter extends ArrayAdapter {
                 if(isCalledFromSearch)
                 {
                     boolean exists=false;
-                    for(int i=0;i<data.size()&&i<backup.size();i++)
-                        if(backup.get(i).getID().equals(data.get(i).getID()))
+                    for(int i=0;i<backup.size();i++)
+                        if(backup.get(i).getID().equals(data.get(position).getID()))
                         {
                             exists=true;
                             break;
