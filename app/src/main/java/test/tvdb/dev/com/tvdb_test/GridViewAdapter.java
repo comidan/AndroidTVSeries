@@ -12,20 +12,48 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.omertron.thetvdbapi.model.Episode;
+import com.omertron.thetvdbapi.model.Series;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GridViewAdapter extends ArrayAdapter {
     private Context context;
     private int layoutResourceId;
-    private ArrayList<MyTVSeries> data;
+    private ArrayList<MyTVSeries> data,backup;
+    private boolean isCalledFromSearch;
     private ImageView imageView;
 
-    public GridViewAdapter(Context context, int layoutResourceId,ArrayList<MyTVSeries> data) {
+    public GridViewAdapter(Context context,int layoutResourceId,ArrayList<MyTVSeries> data)
+    {
         super(context, layoutResourceId, data);
+        isCalledFromSearch=false;
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = data;
     }
+
+    public GridViewAdapter(Context context,int layoutResourceId,List<Series> series,List<Episode>[] episodes,Bitmap[] posters,
+                           ArrayList<MyTVSeries> backup)
+    {
+        super(context,layoutResourceId,series);
+        isCalledFromSearch=true;
+        this.backup=backup;
+        this.layoutResourceId=layoutResourceId;
+        this.context=context;
+        data=new ArrayList<>();
+        ArrayList<String>[] _episodes=new ArrayList[episodes.length];
+        for(int i=0;i<episodes.length;i++)
+        {
+            _episodes[i]=new ArrayList<>();
+            for (int j=0;j<episodes[i].size();j++)
+                _episodes[i].add(episodes[i].get(j).getEpisodeName());
+        }
+        for(int i=0;i<series.size();i++)
+            data.add(new MyTVSeries(series.get(i).getSeriesName(),series.get(i).getOverview(),posters[i],_episodes[i],series.get(i).getId()));
+        System.out.println("GridView data length : "+data.size());
+    }
+
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -54,11 +82,21 @@ public class GridViewAdapter extends ArrayAdapter {
                 intent.putExtra("BITMAP",container.data);
                 intent.putExtra("TITLE",data.get(position).getTitle());
                 intent.putExtra("DESCRIPTION",data.get(position).getDescription());
-                System.out.println(data.get(position).getTitle()+" "+data.get(position).getID());
                 intent.putExtra("ID",data.get(position).getID());
                 intent.putStringArrayListExtra("EPISODES",data.get(position).getEpisodes());
-                //context.startActivity(intent);
+                if(isCalledFromSearch)
+                {
+                    boolean exists=false;
+                    for(int i=0;i<data.size()&&i<backup.size();i++)
+                        if(backup.get(i).getID().equals(data.get(i).getID()))
+                        {
+                            exists=true;
+                            break;
+                        }
+                    intent.putExtra("ADD",exists);
+                }
                 SeriesActivity.launchAndAnimate((Activity)context,container.imageView,intent);
+                System.out.println(data.get(position).getTitle()+" "+data.get(position).getID());
             }
         });
         new DecodeByteArray().execute(container);

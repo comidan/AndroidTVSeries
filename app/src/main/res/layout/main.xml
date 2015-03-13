@@ -10,12 +10,13 @@
         <include android:id="@+id/toolbar" layout="@layout/app_bar">
         </include>
         <Button
+            android:id="@+id/add_series"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"
             android:layout_alignRight="@id/toolbar"
             android:layout_marginRight="10dp"
-            android:text="Add Series"
+            android:text="Search Series"
             android:layout_marginTop="-25dp"/>
     </RelativeLayout>
     <android.support.v4.widget.DrawerLayout
