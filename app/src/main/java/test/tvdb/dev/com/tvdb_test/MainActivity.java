@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
+import com.omertron.thetvdbapi.model.Banner;
 import com.omertron.thetvdbapi.model.Banners;
 import com.omertron.thetvdbapi.model.Episode;
 import com.omertron.thetvdbapi.model.Series;
@@ -52,18 +54,17 @@ public class MainActivity extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView=inflater.inflate(R.layout.activity_main,container,false);
-        poster=(ImageView)rootView.findViewById(R.id.poster);
+        rootView=inflater.inflate(R.layout.search,container,false);
+        /*poster=(ImageView)rootView.findViewById(R.id.poster);
         desc=(TextView)rootView.findViewById(R.id.description);
-        list=(ListView)rootView.findViewById(R.id.listView);
+        list=(ListView)rootView.findViewById(R.id.listView);*/
         bar=(ProgressBar)rootView.findViewById(R.id.progressBar);
         editText=(EditText)rootView.findViewById(R.id.search_box);
         search=(Button)rootView.findViewById(R.id.search_button);
-        episodeLabel=(TextView)rootView.findViewById(R.id.episode_label);
+        //episodeLabel=(TextView)rootView.findViewById(R.id.episode_label);
         myTvSeries=read();
         if(myTvSeries==null)
             myTvSeries=new ArrayList<>();
-        episodeLabel.setVisibility(View.INVISIBLE);
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,41 +92,63 @@ public class MainActivity extends Fragment {
         }
     }
 
-    private class DownloadSeriesData extends AsyncTask<String,Void,Bitmap>
+    private class DownloadSeriesData extends AsyncTask<String,Void,Bitmap[]>  //TODO implement serial AsyncTasks for each series
     {
         private String description;
-        private List<Episode> episodes;
+        private List<Episode>[] episodes;
         private Banners banner;
-        private List<Series> results;
+        private List<Series> results,backup;
 
         @Override
         protected void onPreExecute() {
-            poster.setVisibility(View.INVISIBLE);
+            /*poster.setVisibility(View.INVISIBLE);
             desc.setVisibility(View.INVISIBLE);
             list.setVisibility(View.INVISIBLE);
-            episodeLabel.setVisibility(View.INVISIBLE);
+            episodeLabel.setVisibility(View.INVISIBLE);*/
             bar.setVisibility(View.VISIBLE);
             bar.setIndeterminate(true);
         }
 
         @Override
-        protected Bitmap doInBackground(String[] params)
+        protected Bitmap[] doInBackground(String[] params)
         {
             try {
-                results = tvDB.searchSeries(params[0], "en");
-                banner = tvDB.getBanners(results.get(0).getId());
-                Bitmap poster = null;
-                try {
-                    description = results.get(0).getOverview();
-                    episodes = tvDB.getAllEpisodes(results.get(0).getId(), "en");
-                    InputStream in = new java.net.URL(banner.getSeasonList().get(0).getUrl()).openStream();
-                    poster = BitmapFactory.decodeStream(in);
-                } catch (MalformedURLException ex) {
-                    ex.printStackTrace();
-                } catch (IOException ex) {
+                results=tvDB.searchSeries(params[0],"en");
+                backup=new ArrayList<>();
+                backup.addAll(results);  //needed in case of null posters
+                episodes=new List[results.size()];
+                Bitmap[] poster=new Bitmap[results.size()];
+                try
+                {
+                    for(int i=0,j=0;i<episodes.length;i++,j++)
+                    {
+                        episodes[i]=tvDB.getAllEpisodes(results.get(i).getId(),"en");
+                        banner=tvDB.getBanners(results.get(i).getId());
+                        try
+                        {
+                            List<Banner> banners=banner.getSeasonList();
+                            InputStream in=new java.net.URL(banners.get(0).getUrl()).openStream();
+                            poster[i]=BitmapFactory.decodeStream(in);
+                        }
+                        catch(IndexOutOfBoundsException exc)
+                        {
+                            System.out.println("No poster has been found");
+                            poster[i]=null; //no poster has been found
+                            backup.remove(j);
+                            j--;
+                        }
+                    }
+
+                }
+                catch (MalformedURLException ex)
+                {
                     ex.printStackTrace();
                 }
-                boolean checkPresence = false;
+                catch (IOException ex)
+                {
+                    ex.printStackTrace();
+                }
+                /*boolean checkPresence = false;
                 for (int i = 0; i < myTvSeries.size(); i++)
                     if (myTvSeries.get(i).getDescription().equals(description))
                         checkPresence = true;
@@ -136,8 +159,15 @@ public class MainActivity extends Fragment {
                     MyTVSeries _myTVSeries = new MyTVSeries(results.get(0).getSeriesName(), description, poster, _episodes, results.get(0).getId());
                     myTvSeries.add(_myTVSeries);
                     write(myTvSeries);
-                }
-                return poster;
+                }*/
+                Bitmap[] validPosters=new Bitmap[backup.size()];
+                for(int i=0,j=0;i<poster.length;i++)
+                    if(poster[i]!=null)
+                    {
+                        validPosters[j]=poster[i];
+                        j++;
+                    }
+                return validPosters;
             }
             catch(TvDbException e)
             {
@@ -147,21 +177,25 @@ public class MainActivity extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            poster.setVisibility(View.VISIBLE);
+        protected void onPostExecute(Bitmap[] bitmap) {
+            /*poster.setVisibility(View.VISIBLE);
             desc.setVisibility(View.VISIBLE);
             list.setVisibility(View.VISIBLE);
-            episodeLabel.setVisibility(View.VISIBLE);
+            episodeLabel.setVisibility(View.VISIBLE);*/
             bar.setVisibility(View.INVISIBLE);
             bar.setIndeterminate(false);
-            poster.setImageBitmap(bitmap);
+            /*poster.setImageBitmap(bitmap);
             desc.setText(description);
             final ArrayList<String> _episodes=new ArrayList<>();
             for(int i=0;i<episodes.size();i++)
                 _episodes.add(episodes.get(i).getEpisodeName());
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,_episodes);
             list.setAdapter(adapter);
-            ListViewHelper.getListViewSize(list);
+            ListViewHelper.getListViewSize(list);*/
+            System.out.println("Valid series found : "+backup.size());
+            GridView gridView=(GridView)rootView.findViewById(R.id.gridView);
+            GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,episodes,bitmap,myTvSeries);
+            gridView.setAdapter(customGridAdapter);
         }
     }
 
@@ -188,14 +222,14 @@ public class MainActivity extends Fragment {
         }
     }
 
-    private void write(ArrayList<MyTVSeries> tvSerieses)
+    private void write(ArrayList<MyTVSeries> tvSeries)
     {
         FileOutputStream fos;
         try
         {
             fos=getActivity().openFileOutput("TV_Series.dat",Context.MODE_PRIVATE);
             ObjectOutputStream oos=new ObjectOutputStream(fos);
-            oos.writeObject(tvSerieses);
+            oos.writeObject(tvSeries);
             oos.close();
             fos.close();
         }
