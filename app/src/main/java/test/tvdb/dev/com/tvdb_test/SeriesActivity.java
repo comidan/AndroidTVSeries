@@ -14,6 +14,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -66,8 +67,12 @@ public class SeriesActivity extends ActionBarActivity
                     ArrayList<MyTVSeries> series;
                     series=read();
                     Bitmap bitmap=((BitmapDrawable)image.getDrawable()).getBitmap();
-                    series.add(new MyTVSeries(title,description.getText().toString(),bitmap,extras.getStringArrayList("EPISODES"),
-                                              extras.getString("ID")));
+                    if(series==null) {
+                        Log.v("Emil", "Series è null");
+                        series = new ArrayList<MyTVSeries>();
+                    }
+                    series.add(new MyTVSeries(title, description.getText().toString(), bitmap, extras.getStringArrayList("EPISODES"),
+                            extras.getString("ID")));
                     write(series);
                 }
             });
