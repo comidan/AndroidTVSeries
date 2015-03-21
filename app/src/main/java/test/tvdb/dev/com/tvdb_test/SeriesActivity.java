@@ -67,6 +67,7 @@ public class SeriesActivity extends ActionBarActivity
                     ArrayList<MyTVSeries> series;
                     series=read();
                     Bitmap bitmap=((BitmapDrawable)image.getDrawable()).getBitmap();
+                    //Temporary solution
                     if(series==null) {
                         Log.v("Emil", "Series è null");
                         series = new ArrayList<MyTVSeries>();
