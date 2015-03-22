@@ -1,36 +1,35 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Episode;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SeriesActivity extends ActionBarActivity
@@ -52,10 +51,29 @@ public class SeriesActivity extends ActionBarActivity
         toolbar=(Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         extras=getIntent().getExtras();
-        String title=extras.getString("TITLE");
+        final String title=extras.getString("TITLE");
         toolbar.setTitle("My TV Series");
         toolbar.setSubtitle(title);
         image=(ImageView)findViewById(R.id.poster);
+        boolean add=extras.getBoolean("ADD");
+        if(!add)
+        {
+            Button addSeries=(Button)findViewById(R.id.add_series);
+            addSeries.setVisibility(View.VISIBLE);
+            addSeries.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ArrayList<MyTVSeries> series;
+                    series=read();
+                    Bitmap bitmap=((BitmapDrawable)image.getDrawable()).getBitmap();
+                    if(series==null)
+                        series=new ArrayList<MyTVSeries>();
+                    series.add(new MyTVSeries(title,description.getText().toString(),bitmap,extras.getStringArrayList("EPISODES"),
+                                              extras.getString("ID")));
+                    write(series);
+                }
+            });
+        }
         ViewCompat.setTransitionName(image,"SeriesActivity:image");
         byte[] bitmap=(byte[])extras.getSerializable("BITMAP");
         new DecodeByteArray().execute(bitmap);
@@ -69,6 +87,50 @@ public class SeriesActivity extends ActionBarActivity
             }
         });
         description=(TextView)findViewById(R.id.description);
+    }
+
+    private void write(ArrayList<MyTVSeries> tvSeries)
+    {
+        FileOutputStream fos;
+        try
+        {
+            fos=openFileOutput("TV_Series.dat",Context.MODE_PRIVATE);
+            ObjectOutputStream oos=new ObjectOutputStream(fos);
+            oos.writeObject(tvSeries);
+            oos.close();
+            fos.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private ArrayList<MyTVSeries> read()
+    {
+        try
+        {
+            FileInputStream fis=openFileInput("TV_Series.dat");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            ArrayList<MyTVSeries> object=(ArrayList<MyTVSeries>)ois.readObject();
+            return object;
+        }
+        catch(FileNotFoundException exc)
+        {
+            return null;
+        }
+        catch(IOException exc)
+        {
+            return null;
+        }
+        catch(ClassNotFoundException exc)
+        {
+            return null;
+        }
     }
 
     private class FetchEpisode extends AsyncTask<Void,Void,Void>
@@ -147,7 +209,7 @@ public class SeriesActivity extends ActionBarActivity
         @Override
         protected Void doInBackground(byte[][] params)
         {
-            bitmap= BitmapFactory.decodeByteArray(params[0],0,params[0].length);
+            bitmap=BitmapFactory.decodeByteArray(params[0],0,params[0].length);
             return null;
         }
 

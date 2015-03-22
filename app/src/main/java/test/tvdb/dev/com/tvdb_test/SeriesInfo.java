@@ -37,6 +37,7 @@ import com.omertron.thetvdbapi.model.Episode;
 import com.omertron.thetvdbapi.model.Series;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SeriesInfo extends ActionBarActivity
@@ -100,6 +101,7 @@ public class SeriesInfo extends ActionBarActivity
         private TheTVDBApi tvDB;
         private View rootView;
         private static Intent intent;
+
         public static MyFragment getIstance(int position,Intent _intent)
         {
             MyFragment fragment=new MyFragment();
@@ -117,15 +119,18 @@ public class SeriesInfo extends ActionBarActivity
                 rootView = inflater.inflate(R.layout.fragment_test, container, false);
 
                 episodesList = (ListView) rootView.findViewById(R.id.listView);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-                        extras.getStringArrayList("EPISODES"));
+                ArrayList<String> tmp=extras.getStringArrayList("EPISODES");
+                boolean[] seen_tmp=new boolean[tmp.size()];
+                Arrays.fill(seen_tmp,false);
+                EpisodesAdapter adapter = new EpisodesAdapter(getActivity(),Arrays.copyOf(tmp.toArray(),tmp.size(),String[].class),
+                                                              intent.getExtras().getString("ID"),seen_tmp);
                 episodesList.setAdapter(adapter);
-                episodesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                /*episodesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         new FetchEpisode(view).execute();
                     }
-                });
+                });*/
                 return rootView;
             }
             else
@@ -162,7 +167,7 @@ public class SeriesInfo extends ActionBarActivity
             }
         }
 
-        private class FetchEpisode extends AsyncTask<Void,Void,Void>
+        /*private class FetchEpisode extends AsyncTask<Void,Void,Void>
         {
             private Episode episode;
             private String title;
@@ -201,7 +206,7 @@ public class SeriesInfo extends ActionBarActivity
                 intent.putExtra("EPISODE",episode);
                 startActivity(intent);
             }
-        }
+        }*/
     }
 }
 

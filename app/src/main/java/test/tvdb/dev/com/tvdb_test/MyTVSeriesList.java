@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.Toast;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,7 +48,14 @@ public class MyTVSeriesList extends Fragment
         @Override
         protected void onPostExecute(Void aVoid) {
             customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,series);
-            gridView.setAdapter(customGridAdapter);
+            try
+            {
+                gridView.setAdapter(customGridAdapter);
+            }
+            catch (NullPointerException exc)
+            {
+                Toast.makeText(getActivity(),"No TV Series added",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -6,21 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
@@ -42,9 +34,6 @@ import java.util.List;
 
 public class SearchFragment extends Fragment {
 
-    private ImageView poster;
-    private TextView desc,episodeLabel;
-    private ListView list;
     private ProgressBar bar;
     private EditText editText;
     private Button search;
@@ -55,13 +44,9 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView=inflater.inflate(R.layout.search,container,false);
-        /*poster=(ImageView)rootView.findViewById(R.id.poster);
-        desc=(TextView)rootView.findViewById(R.id.description);
-        list=(ListView)rootView.findViewById(R.id.listView);*/
         bar=(ProgressBar)rootView.findViewById(R.id.progressBar);
         editText=(EditText)rootView.findViewById(R.id.search_box);
         search=(Button)rootView.findViewById(R.id.search_button);
-        //episodeLabel=(TextView)rootView.findViewById(R.id.episode_label);
         myTvSeries=read();
         if(myTvSeries==null)
             myTvSeries=new ArrayList<>();
@@ -94,17 +79,12 @@ public class SearchFragment extends Fragment {
 
     private class DownloadSeriesData extends AsyncTask<String,Void,Bitmap[]>  //TODO implement serial AsyncTasks for each series
     {
-        private String description;
         private List<Episode>[] episodes;
         private Banners banner;
         private List<Series> results,backup;
 
         @Override
         protected void onPreExecute() {
-            /*poster.setVisibility(View.INVISIBLE);
-            desc.setVisibility(View.INVISIBLE);
-            list.setVisibility(View.INVISIBLE);
-            episodeLabel.setVisibility(View.INVISIBLE);*/
             bar.setVisibility(View.VISIBLE);
             bar.setIndeterminate(true);
         }
@@ -148,18 +128,6 @@ public class SearchFragment extends Fragment {
                 {
                     ex.printStackTrace();
                 }
-                /*boolean checkPresence = false;
-                for (int i = 0; i < myTvSeries.size(); i++)
-                    if (myTvSeries.get(i).getDescription().equals(description))
-                        checkPresence = true;
-                if (!checkPresence) {
-                    ArrayList<String> _episodes = new ArrayList<>();
-                    for (int i = 0; i < episodes.size(); i++)
-                        _episodes.add(episodes.get(i).getEpisodeName());
-                    MyTVSeries _myTVSeries = new MyTVSeries(results.get(0).getSeriesName(), description, poster, _episodes, results.get(0).getId());
-                    myTvSeries.add(_myTVSeries);
-                    write(myTvSeries);
-                }*/
                 Bitmap[] validPosters=new Bitmap[backup.size()];
                 for(int i=0,j=0;i<poster.length;i++)
                     if(poster[i]!=null)
@@ -178,20 +146,8 @@ public class SearchFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Bitmap[] bitmap) {
-            /*poster.setVisibility(View.VISIBLE);
-            desc.setVisibility(View.VISIBLE);
-            list.setVisibility(View.VISIBLE);
-            episodeLabel.setVisibility(View.VISIBLE);*/
             bar.setVisibility(View.INVISIBLE);
             bar.setIndeterminate(false);
-            /*poster.setImageBitmap(bitmap);
-            desc.setText(description);
-            final ArrayList<String> _episodes=new ArrayList<>();
-            for(int i=0;i<episodes.size();i++)
-                _episodes.add(episodes.get(i).getEpisodeName());
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,_episodes);
-            list.setAdapter(adapter);
-            ListViewHelper.getListViewSize(list);*/
             System.out.println("Valid series found : "+backup.size());
             GridView gridView=(GridView)rootView.findViewById(R.id.gridView);
             GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,episodes,bitmap,myTvSeries);

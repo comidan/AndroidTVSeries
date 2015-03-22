@@ -1,11 +1,8 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class MyTVSeries implements Serializable
