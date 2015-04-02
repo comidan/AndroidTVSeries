@@ -98,36 +98,41 @@ public class SearchFragment extends Fragment {
                 backup.addAll(results);  //needed in case of null posters
                 episodes=new List[results.size()];
                 Bitmap[] poster=new Bitmap[results.size()];
-                try
+                for(int i=0,j=0;i<episodes.length;i++,j++)
                 {
-                    for(int i=0,j=0;i<episodes.length;i++,j++)
+                    //episodes[i]=tvDB.getAllEpisodes(results.get(i).getId(),"en");
+                    try
                     {
-                        episodes[i]=tvDB.getAllEpisodes(results.get(i).getId(),"en");
-                        banner=tvDB.getBanners(results.get(i).getId());
-                        try
-                        {
-                            List<Banner> banners=banner.getSeasonList();
-                            InputStream in=new java.net.URL(banners.get(0).getUrl()).openStream();
-                            poster[i]=BitmapFactory.decodeStream(in);
-                        }
-                        catch(IndexOutOfBoundsException exc)
-                        {
-                            System.out.println("No poster has been found");
-                            poster[i]=null; //no poster has been found
-                            backup.remove(j);
-                            j--;
-                        }
+                        System.out.println(results.get(i).getPoster());
+                        //InputStream in=new java.net.URL(results.get(i).getPoster()).openStream();
+                        InputStream in=new java.net.URL(results.get(i).getBanner()).openStream();
+                        poster[i]=BitmapFactory.decodeStream(in);
+                        System.out.println(i);
                     }
+                    catch(IndexOutOfBoundsException exc)
+                    {
+                        System.out.println("No poster has been found");
+                        poster[i]=null; //no poster has been found
+                        backup.remove(j);
+                        j--;
+                    }
+                    catch (MalformedURLException ex)
+                    {
+                        System.out.println("No poster has been found");
+                        poster[i]=null; //no poster has been found
+                        backup.remove(j);
+                        j--;
+                    }
+                    catch (IOException ex)
+                    {
+                        System.out.println("No poster has been found");
+                        poster[i]=null; //no poster has been found
+                        backup.remove(j);
+                        j--;
+                    }
+                }
 
-                }
-                catch (MalformedURLException ex)
-                {
-                    ex.printStackTrace();
-                }
-                catch (IOException ex)
-                {
-                    ex.printStackTrace();
-                }
+
                 Bitmap[] validPosters=new Bitmap[backup.size()];
                 for(int i=0,j=0;i<poster.length;i++)
                     if(poster[i]!=null)
@@ -150,7 +155,8 @@ public class SearchFragment extends Fragment {
             bar.setIndeterminate(false);
             System.out.println("Valid series found : "+backup.size());
             GridView gridView=(GridView)rootView.findViewById(R.id.gridView);
-            GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,episodes,bitmap,myTvSeries);
+            //GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,episodes,bitmap,myTvSeries);
+            GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,bitmap,myTvSeries);
             gridView.setAdapter(customGridAdapter);
         }
     }

@@ -22,6 +22,11 @@ public class MyTVSeries implements Serializable
         this.id=id;
     }
 
+    public void setEpisodes(ArrayList<String> episodes)
+    {
+        this.episodes=episodes;
+    }
+
     public String getTitle() {
         return title;
     }

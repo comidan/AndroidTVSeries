@@ -46,11 +46,26 @@ public class GridViewAdapter extends ArrayAdapter {
         for(int i=0;i<episodes.length;i++)
         {
             _episodes[i]=new ArrayList<>();
+            System.out.println(i);
             for (int j=0;j<episodes[i].size();j++)
                 _episodes[i].add(episodes[i].get(j).getEpisodeName());
         }
         for(int i=0;i<series.size();i++)
             data.add(new MyTVSeries(series.get(i).getSeriesName(),series.get(i).getOverview(),posters[i],_episodes[i],series.get(i).getId()));
+        System.out.println("GridView data length : "+data.size());
+    }
+
+    public GridViewAdapter(Context context,int layoutResourceId,List<Series> series,Bitmap[] posters,
+                           ArrayList<MyTVSeries> backup)
+    {
+        super(context,layoutResourceId,series);
+        isCalledFromSearch=true;
+        this.backup=backup;
+        this.layoutResourceId=layoutResourceId;
+        this.context=context;
+        data=new ArrayList<>();
+        for(int i=0;i<series.size();i++)
+            data.add(new MyTVSeries(series.get(i).getSeriesName(),series.get(i).getOverview(),posters[i],null,series.get(i).getId()));
         System.out.println("GridView data length : "+data.size());
     }
 
@@ -84,6 +99,7 @@ public class GridViewAdapter extends ArrayAdapter {
                 intent.putExtra("DESCRIPTION",data.get(position).getDescription());
                 intent.putExtra("ID",data.get(position).getID());
                 intent.putStringArrayListExtra("EPISODES",data.get(position).getEpisodes());
+                intent.putExtra("IS_SEARCHED",isCalledFromSearch);
                 if(isCalledFromSearch)
                 {
                     boolean exists=false;

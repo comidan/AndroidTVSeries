@@ -56,21 +56,15 @@ public class SeriesActivity extends ActionBarActivity
         toolbar.setSubtitle(title);
         image=(ImageView)findViewById(R.id.poster);
         boolean add=extras.getBoolean("ADD");
-        if(!add)
+        if(!add&&extras.getBoolean("IS_SEARCHED"))
         {
             Button addSeries=(Button)findViewById(R.id.add_series);
             addSeries.setVisibility(View.VISIBLE);
             addSeries.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<MyTVSeries> series;
-                    series=read();
-                    Bitmap bitmap=((BitmapDrawable)image.getDrawable()).getBitmap();
-                    if(series==null)
-                        series=new ArrayList<MyTVSeries>();
-                    series.add(new MyTVSeries(title,description.getText().toString(),bitmap,extras.getStringArrayList("EPISODES"),
-                                              extras.getString("ID")));
-                    write(series);
+                    Toast.makeText(SeriesActivity.this,"Saving your TV Series",Toast.LENGTH_SHORT).show();
+                    new DownloadEpisodes().execute();
                 }
             });
         }
@@ -78,14 +72,17 @@ public class SeriesActivity extends ActionBarActivity
         byte[] bitmap=(byte[])extras.getSerializable("BITMAP");
         new DecodeByteArray().execute(bitmap);
         Button button=(Button)findViewById(R.id.more);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(SeriesActivity.this,SeriesInfo.class);
-                intent.putExtras(extras);
-                startActivity(intent);
-            }
-        });
+        if(extras.getBoolean("IS_SEARCHED"))
+            button.setVisibility(View.GONE);
+        else
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent=new Intent(SeriesActivity.this,SeriesInfo.class);
+                    intent.putExtras(extras);
+                    startActivity(intent);
+                }
+            });
         description=(TextView)findViewById(R.id.description);
     }
 
@@ -171,6 +168,42 @@ public class SeriesActivity extends ActionBarActivity
             Intent intent=new Intent(SeriesActivity.this,EpisodeActivity.class);
             intent.putExtra("EPISODE",episode);
             startActivity(intent);
+        }
+    }
+
+    private class DownloadEpisodes extends AsyncTask<Void,Void,Void>
+    {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            if(tvDB==null)
+            {
+                tvDB=new TheTVDBApi("2C8BD989F33B0C84");
+                try
+                {
+                    episodeList=tvDB.getAllEpisodes(getIntent().getExtras().getString("ID"),"en");
+                }
+                catch(TvDbException exc)
+                {
+                    finish();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            ArrayList<MyTVSeries> series;
+            series=read();
+            Bitmap bitmap=((BitmapDrawable)image.getDrawable()).getBitmap();
+            if(series==null)
+                series=new ArrayList<MyTVSeries>();
+            ArrayList<String> _episodes=new ArrayList();
+            for(int i=0;i<episodeList.size();i++)
+                _episodes.add(episodeList.get(i).getEpisodeName());
+            extras.putSerializable("EPISODES",_episodes);
+            series.add(new MyTVSeries(extras.getString("TITLE"),description.getText().toString(),bitmap,extras.getStringArrayList("EPISODES"),extras.getString("ID")));
+            write(series);
         }
     }
 
