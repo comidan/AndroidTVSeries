@@ -57,8 +57,8 @@ public class MainActivity extends ActionBarActivity
             switch(position)
             {
                 case 0:fragment=new SearchFragment(); break;
-                case 1:fragment=new MyTVSeriesList(); break;
-                default:fragment=new MyTVSeriesList();
+                case 1:fragment=new MyTVSeriesListFragment(); break;
+                default:fragment=new MyTVSeriesListFragment();
             }
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()

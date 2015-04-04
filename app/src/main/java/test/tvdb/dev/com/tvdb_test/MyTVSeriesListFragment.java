@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-public class MyTVSeriesList extends Fragment
+public class MyTVSeriesListFragment extends Fragment
 {
     private View rootView;
     private GridView gridView;
