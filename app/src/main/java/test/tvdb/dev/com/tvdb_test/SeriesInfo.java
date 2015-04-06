@@ -96,7 +96,7 @@ public class SeriesInfo extends ActionBarActivity
 
     public static class MyFragment extends Fragment
     {
-        private ListView episodesList;
+        private ListView episodesList,actorList;
         private List<Episode> episodeList;
         private TheTVDBApi tvDB;
         private View rootView;
@@ -114,30 +114,38 @@ public class SeriesInfo extends ActionBarActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            Bundle extras=getArguments();
-            if(extras.getInt("position")!=1) {
-                rootView = inflater.inflate(R.layout.fragment_test, container, false);
+            Bundle extras = getArguments();
+            switch (extras.getInt("position")) {
+                case 0:
+                    rootView = inflater.inflate(R.layout.fragment_test, container, false);
+                    episodesList = (ListView) rootView.findViewById(R.id.listView);
+                    ArrayList<String> tmp = extras.getStringArrayList("EPISODES");
+                    boolean[] seen_tmp = new boolean[tmp.size()];
+                    Arrays.fill(seen_tmp, false);
+                    EpisodesAdapter adapter = new EpisodesAdapter(getActivity(), Arrays.copyOf(tmp.toArray(), tmp.size(), String[].class),
+                            intent.getExtras().getString("ID"), seen_tmp);
+                    episodesList.setAdapter(adapter);
+                        /*episodesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                new FetchEpisode(view).execute();
+                            }
+                        });*/
+                    return rootView;
+                case 1:
+                    rootView = inflater.inflate(R.layout.test_rating, container, false);
+                    new GetRating().execute();
+                    return rootView;
+                case 2:
+                    rootView = inflater.inflate(R.layout.fragment_test, container, false);
+                    actorList = (ListView) rootView.findViewById(R.id.listView);
+                    ArrayList<String> _tmp = extras.getStringArrayList("ACTORS");
+                    ArrayAdapter<String> _adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,
+                                                                           Arrays.copyOf(_tmp.toArray(), _tmp.size(), String[].class));
+                    actorList.setAdapter(_adapter);
 
-                episodesList = (ListView) rootView.findViewById(R.id.listView);
-                ArrayList<String> tmp=extras.getStringArrayList("EPISODES");
-                boolean[] seen_tmp=new boolean[tmp.size()];
-                Arrays.fill(seen_tmp,false);
-                EpisodesAdapter adapter = new EpisodesAdapter(getActivity(),Arrays.copyOf(tmp.toArray(),tmp.size(),String[].class),
-                                                              intent.getExtras().getString("ID"),seen_tmp);
-                episodesList.setAdapter(adapter);
-                /*episodesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        new FetchEpisode(view).execute();
-                    }
-                });*/
-                return rootView;
-            }
-            else
-            {
-                rootView = inflater.inflate(R.layout.test_rating, container, false);
-                new GetRating().execute();
-                return rootView;
+                default : return rootView;
+
             }
         }
 

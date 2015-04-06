@@ -8,10 +8,10 @@ import java.util.ArrayList;
 public class MyTVSeries implements Serializable
 {
     private String title,description,id;
-    private ArrayList<String> episodes;
+    private ArrayList<String> episodes,actors;
     private byte[] image;
 
-    public MyTVSeries(String title, String description, Bitmap poster, ArrayList<String> episodes,String id)
+    public MyTVSeries(String title, String description, Bitmap poster, ArrayList<String> episodes,String id,ArrayList<String> actors)
     {
         this.title = title;
         this.description = description;
@@ -20,6 +20,7 @@ public class MyTVSeries implements Serializable
         image=bos.toByteArray();
         this.episodes = episodes;
         this.id=id;
+        this.actors=actors;
     }
 
     public void setEpisodes(ArrayList<String> episodes)
@@ -49,4 +50,9 @@ public class MyTVSeries implements Serializable
     }
 
     public String getID() {return id;}
+
+    public ArrayList<String> getActors()
+    {
+        return actors;
+    }
 }

@@ -9,7 +9,7 @@
     </array>
     <string-array name="tabs">
         <item>Episodes</item>
-        <item>Info</item>
-        <item>Details</item>
+        <item>Rating</item>
+        <item>Actors</item>
     </string-array>
 </resources>

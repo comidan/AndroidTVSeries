@@ -16,12 +16,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
+import com.omertron.thetvdbapi.model.Actor;
 import com.omertron.thetvdbapi.model.Episode;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -58,7 +60,7 @@ public class SeriesActivity extends ActionBarActivity
         boolean add=extras.getBoolean("ADD");
         if(!add&&extras.getBoolean("IS_SEARCHED"))
         {
-            Button addSeries=(Button)findViewById(R.id.add_series);
+            ImageButton addSeries=(ImageButton)findViewById(R.id.add_series);
             addSeries.setVisibility(View.VISIBLE);
             addSeries.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -173,6 +175,7 @@ public class SeriesActivity extends ActionBarActivity
 
     private class DownloadEpisodes extends AsyncTask<Void,Void,Void>
     {
+        private ArrayList<String> actors;
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -182,6 +185,11 @@ public class SeriesActivity extends ActionBarActivity
                 try
                 {
                     episodeList=tvDB.getAllEpisodes(getIntent().getExtras().getString("ID"),"en");
+                    List<Actor> tmpList=tvDB.getActors(getIntent().getExtras().getString("ID"));
+                    System.out.println("Actors size "+tmpList.size());
+                    actors=new ArrayList<>();
+                    for(int i=0;i<tmpList.size();i++)
+                        actors.add(tmpList.get(i).getName());
                 }
                 catch(TvDbException exc)
                 {
@@ -202,7 +210,10 @@ public class SeriesActivity extends ActionBarActivity
             for(int i=0;i<episodeList.size();i++)
                 _episodes.add(episodeList.get(i).getEpisodeName());
             extras.putSerializable("EPISODES",_episodes);
-            series.add(new MyTVSeries(extras.getString("TITLE"),description.getText().toString(),bitmap,extras.getStringArrayList("EPISODES"),extras.getString("ID")));
+            if(extras.getStringArrayList("ACTORS").size()==0)
+                extras.putSerializable("ACTORS",actors);
+            series.add(new MyTVSeries(extras.getString("TITLE"),description.getText().toString(),bitmap,extras.getStringArrayList("EPISODES"),extras.getString("ID"),
+                                      extras.getStringArrayList("ACTORS")));
             write(series);
         }
     }

@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 public class MainActivity extends ActionBarActivity
@@ -19,7 +19,7 @@ public class MainActivity extends ActionBarActivity
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private Toolbar toolbar;
-    private Button addSeries;
+    private ImageButton addSeries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,7 +32,7 @@ public class MainActivity extends ActionBarActivity
         menuTitles=getResources().getStringArray(R.array.menu_titles);
         drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList=(ListView) findViewById(R.id.left_drawer);
-        addSeries=(Button)findViewById(R.id.add_series);
+        addSeries=(ImageButton)findViewById(R.id.add_series);
         addSeries.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

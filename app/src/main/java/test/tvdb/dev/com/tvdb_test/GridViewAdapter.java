@@ -51,8 +51,13 @@ public class GridViewAdapter extends ArrayAdapter {
                 _episodes[i].add(episodes[i].get(j).getEpisodeName());
         }
         for(int i=0;i<series.size();i++)
-            data.add(new MyTVSeries(series.get(i).getSeriesName(),series.get(i).getOverview(),posters[i],_episodes[i],series.get(i).getId()));
-        System.out.println("GridView data length : "+data.size());
+        {
+            ArrayList<String> actors=new ArrayList<>();
+            List<String> _actors=series.get(i).getActors();
+            for(int j=0;j<series.get(i).getActors().size();j++)
+                actors.add(_actors.get(j));
+            data.add(new MyTVSeries(series.get(i).getSeriesName(), series.get(i).getOverview(), posters[i], _episodes[i], series.get(i).getId(),actors));
+        }
     }
 
     public GridViewAdapter(Context context,int layoutResourceId,List<Series> series,Bitmap[] posters,
@@ -64,9 +69,13 @@ public class GridViewAdapter extends ArrayAdapter {
         this.layoutResourceId=layoutResourceId;
         this.context=context;
         data=new ArrayList<>();
-        for(int i=0;i<series.size();i++)
-            data.add(new MyTVSeries(series.get(i).getSeriesName(),series.get(i).getOverview(),posters[i],null,series.get(i).getId()));
-        System.out.println("GridView data length : "+data.size());
+        for(int i=0;i<series.size();i++) {
+            ArrayList<String> actors = new ArrayList<>();
+            List<String> _actors = series.get(i).getActors();
+            for (int j = 0; j < series.get(i).getActors().size(); j++)
+                actors.add(_actors.get(j));
+            data.add(new MyTVSeries(series.get(i).getSeriesName(), series.get(i).getOverview(), posters[i], null, series.get(i).getId(),actors));
+        }
     }
 
 
@@ -99,6 +108,7 @@ public class GridViewAdapter extends ArrayAdapter {
                 intent.putExtra("DESCRIPTION",data.get(position).getDescription());
                 intent.putExtra("ID",data.get(position).getID());
                 intent.putStringArrayListExtra("EPISODES",data.get(position).getEpisodes());
+                intent.putStringArrayListExtra("ACTORS",data.get(position).getActors());
                 intent.putExtra("IS_SEARCHED",isCalledFromSearch);
                 if(isCalledFromSearch)
                 {

@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
-import com.omertron.thetvdbapi.model.Banner;
 import com.omertron.thetvdbapi.model.Banners;
 import com.omertron.thetvdbapi.model.Episode;
 import com.omertron.thetvdbapi.model.Series;
@@ -92,7 +91,8 @@ public class SearchFragment extends Fragment {
         @Override
         protected Bitmap[] doInBackground(String[] params)
         {
-            try {
+            try
+            {
                 results=tvDB.searchSeries(params[0],"en");
                 backup=new ArrayList<>();
                 backup.addAll(results);  //needed in case of null posters
@@ -100,13 +100,12 @@ public class SearchFragment extends Fragment {
                 Bitmap[] poster=new Bitmap[results.size()];
                 for(int i=0,j=0;i<episodes.length;i++,j++)
                 {
-                    //episodes[i]=tvDB.getAllEpisodes(results.get(i).getId(),"en");
                     try
                     {
-                        System.out.println(results.get(i).getPoster());
-                        //InputStream in=new java.net.URL(results.get(i).getPoster()).openStream();
-                        InputStream in=new java.net.URL(results.get(i).getBanner()).openStream();
-                        poster[i]=BitmapFactory.decodeStream(in);
+                        Series tmp;
+                        System.out.println((tmp=tvDB.getSeries(results.get(i).getId(),"en")).getPoster());
+                        InputStream in=new java.net.URL(tmp.getPoster()).openStream();
+                        poster[i]=Bitmap.createScaledBitmap(BitmapFactory.decodeStream(in),230,320,true);
                         System.out.println(i);
                     }
                     catch(IndexOutOfBoundsException exc)
@@ -131,8 +130,6 @@ public class SearchFragment extends Fragment {
                         j--;
                     }
                 }
-
-
                 Bitmap[] validPosters=new Bitmap[backup.size()];
                 for(int i=0,j=0;i<poster.length;i++)
                     if(poster[i]!=null)
@@ -145,6 +142,11 @@ public class SearchFragment extends Fragment {
             catch(TvDbException e)
             {
                 e.printStackTrace();
+                System.out.println(results.size());
+            }
+            catch (VerifyError e)
+            {
+                e.printStackTrace();
             }
             return null;
         }
@@ -155,7 +157,6 @@ public class SearchFragment extends Fragment {
             bar.setIndeterminate(false);
             System.out.println("Valid series found : "+backup.size());
             GridView gridView=(GridView)rootView.findViewById(R.id.gridView);
-            //GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,episodes,bitmap,myTvSeries);
             GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,bitmap,myTvSeries);
             gridView.setAdapter(customGridAdapter);
         }
