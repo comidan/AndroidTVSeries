@@ -17,7 +17,7 @@ public class Database  extends SQLiteOpenHelper{
     public static final int DATABASE_VERSON = 1;
 
     private static final String SERIES_TABLE = "SERIES";
-    private static final String SQL_CREATE_SERIES = "CREATE TABLE " + SERIES_TABLE + " ( ID_SERIES INTEGER PRIMARY KEY, TITLE TEXT NOT NULL, "
+    private static final String SQL_CREATE_SERIES = "CREATE TABLE " + SERIES_TABLE + " ( ID_SERIES TEXT NOT NULL UNIQUE, TITLE TEXT NOT NULL, "
             + "DESCRIPTION TEXT, RELEASE_DATE INTEGER, LANGUAGE TEXT )";
     private static final String SEASONS_TABLE = "SEASONS";
     private static final String SQL_CREATE_SEASONS = "CREATE TABLE" + SEASONS_TABLE + " ( ID_SEASONS INTEGER PRIMARY KEY, NUMBER INTEGER NOT NULL,"
@@ -62,7 +62,7 @@ public class Database  extends SQLiteOpenHelper{
             db.delete(EPISODES_TABLE, null, null);
             for (MyTVSeries myserie : series) {
                 ContentValues values = new ContentValues();
-                values.put("ID_SERIES", Integer.parseInt(myserie.getID())); //ID per ora intero, anche se in MyTVSeries è stringa, da rivedere
+                values.put("ID_SERIES", myserie.getID()); //ID per ora intero, anche se in MyTVSeries è stringa, da rivedere
                 values.put("TITLE", myserie.getTitle());
                 values.put("DESCRIPTION", myserie.getDescription());
                 //values.put("RELEASE_DATE", myserie.getReleaseDate()) metodo da aggiungere
