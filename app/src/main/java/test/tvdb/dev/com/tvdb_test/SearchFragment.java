@@ -185,7 +185,7 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void write(ArrayList<MyTVSeries> tvSeries)
+    /*private void write(ArrayList<MyTVSeries> tvSeries)
     {
         FileOutputStream fos;
         try
@@ -204,5 +204,5 @@ public class SearchFragment extends Fragment {
         {
             e.printStackTrace();
         }
-    }
+    }*/
 }

@@ -176,6 +176,7 @@ public class SeriesActivity extends ActionBarActivity
     private class DownloadEpisodes extends AsyncTask<Void,Void,Void>
     {
         private ArrayList<String> actors;
+        private String SerieFirstAired;
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -185,6 +186,7 @@ public class SeriesActivity extends ActionBarActivity
                 try
                 {
                     episodeList=tvDB.getAllEpisodes(getIntent().getExtras().getString("ID"),"en");
+                    SerieFirstAired = tvDB.getSeries(getIntent().getExtras().getString("ID"),"en").getFirstAired();
                     List<Actor> tmpList=tvDB.getActors(getIntent().getExtras().getString("ID"));
                     System.out.println("Actors size "+tmpList.size());
                     actors=new ArrayList<>();
@@ -213,7 +215,7 @@ public class SeriesActivity extends ActionBarActivity
             if(extras.getStringArrayList("ACTORS").size()==0)
                 extras.putSerializable("ACTORS",actors);
             series.add(new MyTVSeries(extras.getString("TITLE"),description.getText().toString(),bitmap,extras.getStringArrayList("EPISODES"),extras.getString("ID"),
-                                      extras.getStringArrayList("ACTORS")));
+                                      SerieFirstAired, extras.getStringArrayList("ACTORS"), episodeList));
             write(series);
         }
     }
