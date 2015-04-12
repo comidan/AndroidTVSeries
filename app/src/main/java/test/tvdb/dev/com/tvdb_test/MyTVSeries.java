@@ -1,6 +1,7 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.omertron.thetvdbapi.model.Episode;
 
@@ -30,7 +31,24 @@ public class MyTVSeries implements Serializable
         this.actors=actors;
         this.firstAired = firstAired;
         this.episodeList = episodeList;
-        manageSeasons();
+        if(this.episodeList != null) {
+            manageSeasons();
+            //Log.v("Emil","Seasons size: "+seasons.size());
+        }
+        //else Log.v("Emil", "EpisodeList null");
+    }
+
+    //STILL TO IMPROVE. THIS CONSTRUCTOR IS CALLED BY DATABASE CLASS
+    public MyTVSeries(String title, String description, ArrayList<String> episodes, String id, String firstAired, ArrayList<Season> seasons){
+        this.title = title;
+        this.description = description;
+        image = null;
+        this.episodes = episodes;
+        this.id = id;
+        this.firstAired = firstAired;
+        //this.episodeList = episodeList;
+        this.seasons = seasons;
+        actors = new ArrayList<String>();
     }
 
     public void setEpisodes(ArrayList<String> episodes)
@@ -70,16 +88,23 @@ public class MyTVSeries implements Serializable
 
     public int getTotSeasons(){ return seasons.size(); }
 
+    public Season getSeason(int seasonNumber){ return seasons.get(seasonNumber);}
+
     public ArrayList<Season> getSeasons(){ return seasons; }
 
     private void manageSeasons(){
         seasons = new ArrayList<Season>();
-        for(int i=0, j=1; i<episodeList.size(); i++){
+        //Log.v("Emil","Seasons size: "+seasons.size());
+        for(int i=0, j=0; i<episodeList.size(); i++){
            Episode e = episodeList.get(i);
            if(e.getSeasonNumber() == j){
-               if(seasons.size() < j)   //se non è ancora stata creata la stagione
-                   seasons.add(new Season(e.getSeasonId(),j));
-               seasons.get(j-1).addEpisode(e);
+               if(seasons.size() <= j) {   //se non è ancora stata creata la stagione
+                   seasons.add(new Season(e.getSeasonId(), j));
+                   //Log.v("Emil","Seasons size: "+seasons.size());
+                   //Log.v("Emil","SeasonID and number: "+e.getSeasonId()+ " "+e.getSeasonNumber());
+               }
+               seasons.get(j).addEpisode(e);
+               //Log.v("Emil","Episode ID,number, name: "+e.getId()+ " "+e.getEpisodeNumber()+" "+e.getEpisodeName());
            }
            else {
                j++;

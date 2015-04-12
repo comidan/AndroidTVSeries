@@ -1,5 +1,7 @@
 package test.tvdb.dev.com.tvdb_test;
 
+import android.util.Log;
+
 import com.omertron.thetvdbapi.model.Episode;
 
 import java.io.Serializable;
@@ -20,9 +22,14 @@ public class Season implements Serializable{
         episodes = new ArrayList<Episode>();
     }
 
+    public Season(String id, int seasonNumber, ArrayList<Episode> episodes){
+        this.id = id;
+        this.seasonNumber = seasonNumber;
+        this.episodes = episodes;
+    }
+
     public boolean addEpisode(Episode e){
         if(episodes.add(e))
-            //TODO Ordinare dopo inserimento per episodenumber, non serve se già ordinati, informarsi
             return true;
         return false;
     }
@@ -34,4 +41,14 @@ public class Season implements Serializable{
     public ArrayList<Episode> getEpisodesList(){ return episodes; }
 
     public int getTotEpisodes(){ return episodes.size(); }
+
+    //minus one because episodes start from number one but in the arraylist they start from 0
+    public Episode getEpisode(int episodeNumber){
+        try {
+            return episodes.get(episodeNumber - 1);
+        } catch (IndexOutOfBoundsException ex){
+            Log.v("Emil","episodes start from number one but in the arraylist they start from 0");
+            ex.printStackTrace();
+        }
+    }
 }

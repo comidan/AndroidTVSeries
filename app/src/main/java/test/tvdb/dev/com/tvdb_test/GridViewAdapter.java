@@ -56,7 +56,7 @@ public class GridViewAdapter extends ArrayAdapter {
             List<String> _actors=series.get(i).getActors();
             for(int j=0;j<series.get(i).getActors().size();j++)
                 actors.add(_actors.get(j));
-            data.add(new MyTVSeries(series.get(i).getSeriesName(), series.get(i).getOverview(), posters[i], _episodes[i], series.get(i).getId(),actors));
+            data.add(new MyTVSeries(series.get(i).getSeriesName(), series.get(i).getOverview(), posters[i], _episodes[i], series.get(i).getId(), series.get(i).getFirstAired(),actors,episodes[i]));
         }
     }
 
@@ -74,7 +74,7 @@ public class GridViewAdapter extends ArrayAdapter {
             List<String> _actors = series.get(i).getActors();
             for (int j = 0; j < series.get(i).getActors().size(); j++)
                 actors.add(_actors.get(j));
-            data.add(new MyTVSeries(series.get(i).getSeriesName(), series.get(i).getOverview(), posters[i], null, series.get(i).getId(),actors));
+            data.add(new MyTVSeries(series.get(i).getSeriesName(), series.get(i).getOverview(), posters[i], null, series.get(i).getId(), series.get(i).getFirstAired(),actors, null));
         }
     }
 
