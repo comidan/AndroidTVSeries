@@ -6,10 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.omertron.thetvdbapi.model.Episode;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -22,12 +25,12 @@ public class Database  extends SQLiteOpenHelper{
 
     private static final String SERIES_TABLE = "SERIES";
     private static final String SQL_CREATE_SERIES = "CREATE TABLE " + SERIES_TABLE + " ( ID_SERIES TEXT NOT NULL UNIQUE, TITLE TEXT NOT NULL, "
-            + "DESCRIPTION TEXT, RELEASE_DATE TEXT, LANGUAGE TEXT )";
+            + "DESCRIPTION TEXT, RELEASE_DATE TEXT, LANGUAGE TEXT, POSTER BLOB )";
     private static final String SEASONS_TABLE = "SEASONS";
-    private static final String SQL_CREATE_SEASONS = "CREATE TABLE" + SEASONS_TABLE + " ( ID_SEASONS TEXT NOT NULL UNIQUE, NUMBER INTEGER NOT NULL,"
+    private static final String SQL_CREATE_SEASONS = "CREATE TABLE " + SEASONS_TABLE + " ( ID_SEASONS TEXT NOT NULL UNIQUE, NUMBER INTEGER NOT NULL,"
             + "id_series TEXT NOT NULL )";
     private static final String EPISODES_TABLE = "EPISODES";
-    private static final String SQL_CREATE_EPISODES = "CREATE TABLE" + EPISODES_TABLE + " (ID_EPISODES TEXT NOT NULL UNIQUE, TITLE TEXT NOT NULL, "
+    private static final String SQL_CREATE_EPISODES = "CREATE TABLE " + EPISODES_TABLE + " (ID_EPISODES TEXT NOT NULL UNIQUE, TITLE TEXT NOT NULL, "
             + "OVERVIEW TEXT, NUMBER INTEGER NOT NULL, SEEN INTEGER, RELEASE_DATE TEXT, id_season TEXT NOT NULL)";
 
     /*
@@ -36,7 +39,7 @@ public class Database  extends SQLiteOpenHelper{
 	 */
 
 
-    //TODO add poster and episode image
+    //TODO add poster
 
     public Database(Context context) { super(context, DATABASE_NAME, null ,DATABASE_VERSON); }
 
@@ -60,6 +63,9 @@ public class Database  extends SQLiteOpenHelper{
 
     public boolean storeSeries(ArrayList<MyTVSeries> series){
         Log.v("Emil", "MyTVSeries arraylist size: " + series.size());
+        Log.v("Emil","Episodes size: "+series.get(0).getTotSeasons());
+        for(int i=0; i<series.get(0).getSeason(1).getTotEpisodes(); i++)
+            Log.v("Emil",series.get(0).getSeason(1).getEpisode(i).getEpisodeName());
         try {
             SQLiteDatabase db = getWritableDatabase();
             db.delete(SERIES_TABLE, null, null);
@@ -72,13 +78,14 @@ public class Database  extends SQLiteOpenHelper{
                 values.put("DESCRIPTION", myserie.getDescription());
                 values.put("RELEASE_DATE", myserie.getFirstAired());
                 values.put("LANGUAGE", "en"); //temporaly only english
+                values.put("POSTER", myserie.getPoster());
                 for (int i = 0; i < myserie.getTotSeasons(); i++) {
                     ContentValues values1 = new ContentValues();
                     Season s = myserie.getSeason(i);
                     values1.put("ID_SEASONS", s.getID());
                     values1.put("NUMBER", s.getSeasonNumber());   //OR values1.put("NUMBER", i);
                     values1.put("id_series", myserie.getID());
-                    for (int j = 1; i <= s.getTotEpisodes(); j++) {
+                    for (int j = 1; j <= s.getTotEpisodes(); j++) {
                         ContentValues values2 = new ContentValues();
                         Episode e = s.getEpisode(j);
                         values2.put("ID_EPISODES", e.getId());
@@ -106,7 +113,7 @@ public class Database  extends SQLiteOpenHelper{
     public ArrayList<MyTVSeries> getSeries(){
         ArrayList<MyTVSeries> series = new ArrayList<MyTVSeries>();
         Log.v("Emil","Reading TVseries from database");
-        final String SELECT_SERIES = "SELECT ID_SERIES, TITLE, DESCRIPTION, RELEASE_DATE, LANGUAGE"
+        final String SELECT_SERIES = "SELECT ID_SERIES, TITLE, DESCRIPTION, RELEASE_DATE, LANGUAGE, POSTER"
                 + " FROM "+SERIES_TABLE+" ORDER BY TITLE";
         try{
             SQLiteDatabase db = getReadableDatabase();
@@ -117,6 +124,7 @@ public class Database  extends SQLiteOpenHelper{
                 String description = cursor.getString(cursor.getColumnIndex("DESCRIPTION"));
                 String release_date = cursor.getString(cursor.getColumnIndex("RELEASE_DATE"));
                 String language = cursor.getString(cursor.getColumnIndex("LANGUAGE"));
+                byte[] poster = cursor.getBlob(cursor.getColumnIndex("POSTER"));
 
                 ArrayList<Season> seasons = new ArrayList<Season>();
 
@@ -151,10 +159,13 @@ public class Database  extends SQLiteOpenHelper{
                     }
                     seasons.add(new Season(seasonID, seasonNumber, episodes));
                 }
-                series.add(new MyTVSeries(title, description, episodesTitle, id, release_date, seasons));
+                series.add(new MyTVSeries(title, description, episodesTitle, id, release_date, poster, seasons));
             }
             db.close();
             Log.v("Emil", "MyTVSeries arraylist size: " + series.size());
+            Log.v("Emil","Episodes size: "+series.get(0).getTotSeasons());
+            for(int i=0; i<series.get(0).getSeason(1).getTotEpisodes(); i++)
+                Log.v("Emil",series.get(0).getSeason(1).getEpisode(i).getEpisodeName());
             return series;
         } catch (SQLiteException e){
             e.printStackTrace();
