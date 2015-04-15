@@ -49,6 +49,7 @@ public class Season implements Serializable{
         } catch (IndexOutOfBoundsException ex){
             Log.v("Emil","episodes start from number one but in the arraylist they start from 0");
             ex.printStackTrace();
+            return null;
         }
     }
 }

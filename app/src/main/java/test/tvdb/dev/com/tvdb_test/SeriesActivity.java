@@ -45,6 +45,7 @@ public class SeriesActivity extends ActionBarActivity
     private SlidingTabLayout tabLayout;
     private ViewPager viewPager;
     private Toolbar toolbar;
+    private Database db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +87,12 @@ public class SeriesActivity extends ActionBarActivity
                 }
             });
         description=(TextView)findViewById(R.id.description);
+        db = new Database(this);
     }
 
     private void write(ArrayList<MyTVSeries> tvSeries)
     {
-        FileOutputStream fos;
+        /*FileOutputStream fos;
         try
         {
             fos=openFileOutput("TV_Series.dat",Context.MODE_PRIVATE);
@@ -106,12 +108,13 @@ public class SeriesActivity extends ActionBarActivity
         catch (IOException e)
         {
             e.printStackTrace();
-        }
+        }*/
+        db.storeSeries(tvSeries);
     }
 
     private ArrayList<MyTVSeries> read()
     {
-        try
+        /*try
         {
             FileInputStream fis=openFileInput("TV_Series.dat");
             ObjectInputStream ois = new ObjectInputStream(fis);
@@ -129,7 +132,8 @@ public class SeriesActivity extends ActionBarActivity
         catch(ClassNotFoundException exc)
         {
             return null;
-        }
+        }*/
+        return db.getSeries();
     }
 
     private class FetchEpisode extends AsyncTask<Void,Void,Void>

@@ -39,6 +39,7 @@ public class SearchFragment extends Fragment {
     private TheTVDBApi tvDB;
     private ArrayList<MyTVSeries> myTvSeries;
     private View rootView;
+    private Database db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class SearchFragment extends Fragment {
         bar=(ProgressBar)rootView.findViewById(R.id.progressBar);
         editText=(EditText)rootView.findViewById(R.id.search_box);
         search=(Button)rootView.findViewById(R.id.search_button);
+        db = new Database(getActivity());
         myTvSeries=read();
         if(myTvSeries==null)
             myTvSeries=new ArrayList<>();
@@ -164,7 +166,7 @@ public class SearchFragment extends Fragment {
 
     private ArrayList<MyTVSeries> read()
     {
-        try
+        /*try
         {
             FileInputStream fis=getActivity().openFileInput("TV_Series.dat");
             ObjectInputStream ois = new ObjectInputStream(fis);
@@ -182,7 +184,8 @@ public class SearchFragment extends Fragment {
         catch(ClassNotFoundException exc)
         {
             return null;
-        }
+        }*/
+        return db.getSeries();
     }
 
     /*private void write(ArrayList<MyTVSeries> tvSeries)

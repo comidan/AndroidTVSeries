@@ -23,10 +23,12 @@ public class MyTVSeriesListFragment extends Fragment
     private GridView gridView;
     private GridViewAdapter customGridAdapter;
     private ActionBar toolbar;
+    private Database db;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        db = new Database(getActivity());
         rootView=inflater.inflate(R.layout.activity_seen,container,false);
         toolbar=((ActionBarActivity)getActivity()).getSupportActionBar();
         toolbar.setTitle("My TV Series");
@@ -61,7 +63,7 @@ public class MyTVSeriesListFragment extends Fragment
 
     private ArrayList<MyTVSeries> read()
     {
-        try
+        /*try
         {
             FileInputStream fis=getActivity().openFileInput("TV_Series.dat");
             ObjectInputStream ois = new ObjectInputStream(fis);
@@ -79,7 +81,9 @@ public class MyTVSeriesListFragment extends Fragment
         catch(ClassNotFoundException exc)
         {
             return null;
-        }
+        }*/
+        return db.getSeries();
+
     }
 
     @Override
