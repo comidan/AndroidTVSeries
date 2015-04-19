@@ -107,7 +107,8 @@ public class GridViewAdapter extends ArrayAdapter {
                 intent.putExtra("TITLE",data.get(position).getTitle());
                 intent.putExtra("DESCRIPTION",data.get(position).getDescription());
                 intent.putExtra("ID",data.get(position).getID());
-                intent.putStringArrayListExtra("EPISODES",data.get(position).getEpisodes());
+                intent.putExtra("EPISODES",data.get(position).getSeasons());
+                //intent.putStringArrayListExtra("EPISODES",data.get(position).getEpisodes());
                 intent.putStringArrayListExtra("ACTORS",data.get(position).getActors());
                 intent.putExtra("IS_SEARCHED",isCalledFromSearch);
                 if(isCalledFromSearch)

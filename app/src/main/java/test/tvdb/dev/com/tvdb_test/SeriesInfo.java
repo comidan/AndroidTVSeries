@@ -119,7 +119,15 @@ public class SeriesInfo extends ActionBarActivity
                 case 0:
                     rootView = inflater.inflate(R.layout.fragment_test, container, false);
                     episodesList = (ListView) rootView.findViewById(R.id.listView);
-                    ArrayList<String> tmp = extras.getStringArrayList("EPISODES");
+                    ArrayList<Season> tmpSeasons =(ArrayList<Season>)extras.getSerializable("EPISODES");
+                    ArrayList<String> tmp=new ArrayList<>();
+                    /*for(int i=0;i<tmpSeasons.size();i++)
+                        for(int j=0;j<tmpSeasons.get(i).getEpisodesList().size();j++)
+                            tmp.add(tmpSeasons.get(i).getEpisodesList().get(j).getEpisodeName());*/
+                    for(Season s : tmpSeasons)
+                        for(int i=1; i<=s.getTotEpisodes(); i++)
+                            tmp.add(s.getEpisode(i).getEpisodeName());
+                    //ArrayList<String> tmp = extras.getStringArrayList("EPISODES");
                     boolean[] seen_tmp = new boolean[tmp.size()];
                     Arrays.fill(seen_tmp, false);
                     EpisodesAdapter adapter = new EpisodesAdapter(getActivity(), Arrays.copyOf(tmp.toArray(), tmp.size(), String[].class),

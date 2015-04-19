@@ -63,9 +63,6 @@ public class Database  extends SQLiteOpenHelper{
 
     public boolean storeSeries(ArrayList<MyTVSeries> series){
         Log.v("Emil", "MyTVSeries arraylist size: " + series.size());
-        Log.v("Emil","Episodes size: "+series.get(0).getTotSeasons());
-        for(int i=0; i<series.get(0).getSeason(1).getTotEpisodes(); i++)
-            Log.v("Emil",series.get(0).getSeason(1).getEpisode(i).getEpisodeName());
         try {
             SQLiteDatabase db = getWritableDatabase();
             db.delete(SERIES_TABLE, null, null);
@@ -94,7 +91,7 @@ public class Database  extends SQLiteOpenHelper{
                         values2.put("NUMBER", e.getEpisodeNumber());
                         values2.put("SEEN", 0); //episode seen or not, 0 false and 1 true. FOR NOW IS SET TO 0
                         values2.put("RELEASE_DATE", e.getFirstAired());
-                        values2.put("id_season", myserie.getID());
+                        values2.put("id_season", s.getID());
                         db.insert(EPISODES_TABLE, null, values2);
                     }
                     db.insert(SEASONS_TABLE, null, values1);
@@ -163,9 +160,6 @@ public class Database  extends SQLiteOpenHelper{
             }
             db.close();
             Log.v("Emil", "MyTVSeries arraylist size: " + series.size());
-            Log.v("Emil","Episodes size: "+series.get(0).getTotSeasons());
-            for(int i=0; i<series.get(0).getSeason(1).getTotEpisodes(); i++)
-                Log.v("Emil",series.get(0).getSeason(1).getEpisode(i).getEpisodeName());
             return series;
         } catch (SQLiteException e){
             e.printStackTrace();

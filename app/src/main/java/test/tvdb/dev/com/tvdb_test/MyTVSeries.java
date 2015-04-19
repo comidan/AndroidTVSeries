@@ -39,10 +39,10 @@ public class MyTVSeries implements Serializable
     }
 
     //STILL TO IMPROVE. THIS CONSTRUCTOR IS CALLED BY DATABASE CLASS
-    public MyTVSeries(String title, String description, ArrayList<String> episodes, String id, String firstAired, ArrayList<Season> seasons){
+    public MyTVSeries(String title, String description, ArrayList<String> episodes, String id, String firstAired, byte[] image, ArrayList<Season> seasons){
         this.title = title;
         this.description = description;
-        image = null;
+        this.image = image;
         this.episodes = episodes;
         this.id = id;
         this.firstAired = firstAired;
