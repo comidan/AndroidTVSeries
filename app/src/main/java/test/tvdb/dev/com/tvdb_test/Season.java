@@ -52,4 +52,10 @@ public class Season implements Serializable{
             return null;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return (this.id.equals(((Season)o).getID()));
+
+    }
 }

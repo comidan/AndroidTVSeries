@@ -94,17 +94,18 @@ public class MyTVSeries implements Serializable
 
     private void manageSeasons(){
         seasons = new ArrayList<Season>();
-        //Log.v("Emil","Seasons size: "+seasons.size());
+        boolean noSeason0 = true;  //true if no Season 0 and false if there is Season 0
         for(int i=0, j=0; i<episodeList.size(); i++){
            Episode e = episodeList.get(i);
            if(e.getSeasonNumber() == j){
-               if(seasons.size() <= j) {   //se non è ancora stata creata la stagione
+               if(seasons.size() <= j && seasons.indexOf(new Season(e.getSeasonId(), j))==-1) {   //se non è ancora stata creata la stagione
                    seasons.add(new Season(e.getSeasonId(), j));
-                   //Log.v("Emil","Seasons size: "+seasons.size());
-                   //Log.v("Emil","SeasonID and number: "+e.getSeasonId()+ " "+e.getSeasonNumber());
                }
-               seasons.get(j).addEpisode(e);
-               //Log.v("Emil","Episode ID,number, name: "+e.getId()+ " "+e.getEpisodeNumber()+" "+e.getEpisodeName());
+               if(j==0)
+                   noSeason0 = false;
+               if(!noSeason0)
+                   seasons.get(j).addEpisode(e);
+               else seasons.get(j-1).addEpisode(e);
            }
            else {
                j++;

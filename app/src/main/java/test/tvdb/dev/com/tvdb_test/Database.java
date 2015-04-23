@@ -80,7 +80,7 @@ public class Database  extends SQLiteOpenHelper{
                     ContentValues values1 = new ContentValues();
                     Season s = myserie.getSeason(i);
                     values1.put("ID_SEASONS", s.getID());
-                    values1.put("NUMBER", s.getSeasonNumber());   //OR values1.put("NUMBER", i);
+                    values1.put("NUMBER", s.getSeasonNumber());
                     values1.put("id_series", myserie.getID());
                     for (int j = 1; j <= s.getTotEpisodes(); j++) {
                         ContentValues values2 = new ContentValues();
