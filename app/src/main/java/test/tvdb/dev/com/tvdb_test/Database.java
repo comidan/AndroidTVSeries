@@ -32,14 +32,15 @@ public class Database  extends SQLiteOpenHelper{
     private static final String EPISODES_TABLE = "EPISODES";
     private static final String SQL_CREATE_EPISODES = "CREATE TABLE " + EPISODES_TABLE + " (ID_EPISODES TEXT NOT NULL UNIQUE, TITLE TEXT NOT NULL, "
             + "OVERVIEW TEXT, NUMBER INTEGER NOT NULL, SEEN INTEGER, RELEASE_DATE TEXT, id_season TEXT NOT NULL)";
+    private static final String ACTORS_TABLE = "ACTORS";
+    private static final String SQL_CREATE_ACTORS = "CREATE TABLE " + ACTORS_TABLE + " ( NAME TEXT NOT NULL, id_series TEXT NOT NULL)";
 
     /*
 	 * private static final String SQL_DELETE_SERIES = "DROP TABLE IF EXISTS " +
 	 * SERIES_TABLE;
 	 */
 
-
-    //TODO add poster
+    //TODO If something being modified in here, modify also DATABASE_VERSION
 
     public Database(Context context) { super(context, DATABASE_NAME, null ,DATABASE_VERSON); }
 
@@ -48,6 +49,7 @@ public class Database  extends SQLiteOpenHelper{
         db.execSQL(SQL_CREATE_SERIES);
         db.execSQL(SQL_CREATE_SEASONS);
         db.execSQL(SQL_CREATE_EPISODES);
+        db.execSQL(SQL_CREATE_ACTORS);
     }
 
     @Override
@@ -68,6 +70,7 @@ public class Database  extends SQLiteOpenHelper{
             db.delete(SERIES_TABLE, null, null);
             db.delete(SEASONS_TABLE, null, null);
             db.delete(EPISODES_TABLE, null, null);
+            db.delete(ACTORS_TABLE, null, null);
             for (MyTVSeries myserie : series) {
                 ContentValues values = new ContentValues();
                 values.put("ID_SERIES", myserie.getID());
@@ -96,6 +99,13 @@ public class Database  extends SQLiteOpenHelper{
                     }
                     db.insert(SEASONS_TABLE, null, values1);
                 }
+                ArrayList<String> actors = myserie.getActors();
+                for(int k = 0; k < actors.size(); k++){
+                    ContentValues values1 = new ContentValues();
+                    values1.put("NAME", actors.get(k));
+                    values1.put("id_series",myserie.getID());
+                    db.insert(ACTORS_TABLE, null, values1);
+                }
                 db.insert(SERIES_TABLE, null, values);
             }
             db.close();
@@ -122,7 +132,6 @@ public class Database  extends SQLiteOpenHelper{
                 String release_date = cursor.getString(cursor.getColumnIndex("RELEASE_DATE"));
                 String language = cursor.getString(cursor.getColumnIndex("LANGUAGE"));
                 byte[] poster = cursor.getBlob(cursor.getColumnIndex("POSTER"));
-
                 ArrayList<Season> seasons = new ArrayList<Season>();
 
                 ArrayList<String> episodesTitle = new ArrayList<String>();
@@ -156,7 +165,13 @@ public class Database  extends SQLiteOpenHelper{
                     }
                     seasons.add(new Season(seasonID, seasonNumber, episodes));
                 }
-                series.add(new MyTVSeries(title, description, episodesTitle, id, release_date, poster, seasons));
+                ArrayList<String> actors = new ArrayList<>();
+                final String SELECT_ACTORS = "SELECT NAME FROM "+ACTORS_TABLE+ " WHERE id_series="+id;
+                cursor1 = db.rawQuery(SELECT_ACTORS, null);
+                while (cursor1.moveToNext()){
+                    actors.add(cursor1.getString(cursor1.getColumnIndex("NAME")));
+                }
+                series.add(new MyTVSeries(title, description, episodesTitle, id, release_date, poster, seasons, actors));
             }
             db.close();
             Log.v("Emil", "MyTVSeries arraylist size: " + series.size());
