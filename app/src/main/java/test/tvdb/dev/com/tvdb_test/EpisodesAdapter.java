@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Episode;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,14 +28,20 @@ public class EpisodesAdapter extends ArrayAdapter<String>
     private TheTVDBApi tvDB;
     private List<Episode> episodeList;
     private String id;
-    private boolean[] check_seen;
+    private ArrayList<String> updatedWatches;
+    private ArrayList<Boolean> watches;
+    private String[] IDs;
 
-    public EpisodesAdapter(Context context, String[] values, String id,boolean[] check_seen) {
+    public EpisodesAdapter(Context context, String[] values, String id,ArrayList<String> updatedWatches,ArrayList<Boolean> watches,String[] IDs) {
         super(context,R.layout.episode_row, values);
         this.context = context;
         this.values = values;
         this.id = id;
-        this.check_seen = check_seen;
+        this.updatedWatches=updatedWatches;
+        if(this.updatedWatches==null)
+            this.updatedWatches=new ArrayList<>();
+        this.watches=watches;
+        this.IDs=IDs;
     }
 
     @Override
@@ -43,11 +51,12 @@ public class EpisodesAdapter extends ArrayAdapter<String>
         final View rowView = inflater.inflate(R.layout.episode_row, parent, false);
         TextView textView = (TextView) rowView.findViewById(R.id.episode_label);
         CheckBox checkBox = (CheckBox) rowView.findViewById(R.id.episode_seen);
-        checkBox.setChecked(check_seen[position]);
+        checkBox.setChecked(watches.get(position));
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                check_seen[position]=isChecked;
+                watches.set(position,isChecked);
+                updatedWatches.add(IDs[position] + " " + (isChecked ? 1 : 0));
             }
         });
         textView.setText(values[position]);

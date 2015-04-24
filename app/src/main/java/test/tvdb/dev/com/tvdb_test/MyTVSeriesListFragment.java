@@ -10,11 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.Toast;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 public class MyTVSeriesListFragment extends Fragment
@@ -25,11 +20,10 @@ public class MyTVSeriesListFragment extends Fragment
     private ActionBar toolbar;
     private Database db;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        db = new Database(getActivity());
         rootView=inflater.inflate(R.layout.activity_seen,container,false);
+        db=new Database(getActivity());
         toolbar=((ActionBarActivity)getActivity()).getSupportActionBar();
         toolbar.setTitle("My TV Series");
         gridView=(GridView)rootView.findViewById(R.id.gridView);
@@ -49,6 +43,10 @@ public class MyTVSeriesListFragment extends Fragment
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            //System.out.println(series.size()+" "+series.get(0).getSeasons().size()+" "+series.get(0).getSeasons().get(0).getEpisodesList().size());
+            for(int i=0;i<series.get(0).getSeasons().size();i++)
+                for(int j=0;j<series.get(0).getSeasons().get(i).getEpisodesList().size();j++)
+                    System.out.println(series.get(0).getSeasons().get(i).getEpisodesList().get(j).getEpisodeName());
             customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,series);
             try
             {
@@ -83,7 +81,6 @@ public class MyTVSeriesListFragment extends Fragment
             return null;
         }*/
         return db.getSeries();
-
     }
 
     @Override

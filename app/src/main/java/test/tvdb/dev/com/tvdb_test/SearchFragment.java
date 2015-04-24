@@ -44,6 +44,7 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView=inflater.inflate(R.layout.search,container,false);
+        db=new Database(getActivity());
         bar=(ProgressBar)rootView.findViewById(R.id.progressBar);
         editText=(EditText)rootView.findViewById(R.id.search_box);
         search=(Button)rootView.findViewById(R.id.search_button);
@@ -157,7 +158,7 @@ public class SearchFragment extends Fragment {
         protected void onPostExecute(Bitmap[] bitmap) {
             bar.setVisibility(View.INVISIBLE);
             bar.setIndeterminate(false);
-            System.out.println("Valid series found : "+backup.size());
+            //System.out.println("Valid series found : "+backup.size());
             GridView gridView=(GridView)rootView.findViewById(R.id.gridView);
             GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,bitmap,myTvSeries);
             gridView.setAdapter(customGridAdapter);
@@ -188,9 +189,9 @@ public class SearchFragment extends Fragment {
         return db.getSeries();
     }
 
-    /*private void write(ArrayList<MyTVSeries> tvSeries)
+    private void write(ArrayList<MyTVSeries> tvSeries)
     {
-        FileOutputStream fos;
+        /*FileOutputStream fos;
         try
         {
             fos=getActivity().openFileOutput("TV_Series.dat",Context.MODE_PRIVATE);
@@ -206,6 +207,7 @@ public class SearchFragment extends Fragment {
         catch (IOException e)
         {
             e.printStackTrace();
-        }
-    }*/
+        }*/
+        db.storeSeries(tvSeries);
+    }
 }

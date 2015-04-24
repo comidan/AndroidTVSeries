@@ -81,9 +81,9 @@ public class SeriesActivity extends ActionBarActivity
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent=new Intent(SeriesActivity.this,SeriesInfo.class);
-                    intent.putExtras(extras);
-                    startActivity(intent);
+                    Intent intent=new Intent(SeriesActivity.this,SeriesInfo.class);  //you should call this following 3 lines on the post
+                    intent.putExtras(extras);                                        //execute of aTask after downloading actorsList or
+                    startActivity(intent);                                           //wait for the actor implementation in the DB
                 }
             });
         description=(TextView)findViewById(R.id.description);
@@ -92,47 +92,11 @@ public class SeriesActivity extends ActionBarActivity
 
     private void write(ArrayList<MyTVSeries> tvSeries)
     {
-        /*FileOutputStream fos;
-        try
-        {
-            fos=openFileOutput("TV_Series.dat",Context.MODE_PRIVATE);
-            ObjectOutputStream oos=new ObjectOutputStream(fos);
-            oos.writeObject(tvSeries);
-            oos.close();
-            fos.close();
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }*/
         db.storeSeries(tvSeries);
     }
 
     private ArrayList<MyTVSeries> read()
     {
-        /*try
-        {
-            FileInputStream fis=openFileInput("TV_Series.dat");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<MyTVSeries> object=(ArrayList<MyTVSeries>)ois.readObject();
-            return object;
-        }
-        catch(FileNotFoundException exc)
-        {
-            return null;
-        }
-        catch(IOException exc)
-        {
-            return null;
-        }
-        catch(ClassNotFoundException exc)
-        {
-            return null;
-        }*/
         return db.getSeries();
     }
 
@@ -180,7 +144,7 @@ public class SeriesActivity extends ActionBarActivity
     private class DownloadEpisodes extends AsyncTask<Void,Void,Void>
     {
         private ArrayList<String> actors;
-        private String SerieFirstAired;
+        private String serieFirstAired;
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -190,7 +154,7 @@ public class SeriesActivity extends ActionBarActivity
                 try
                 {
                     episodeList=tvDB.getAllEpisodes(getIntent().getExtras().getString("ID"),"en");
-                    SerieFirstAired = tvDB.getSeries(getIntent().getExtras().getString("ID"),"en").getFirstAired();
+                    serieFirstAired = tvDB.getSeries(getIntent().getExtras().getString("ID"),"en").getFirstAired();
                     List<Actor> tmpList=tvDB.getActors(getIntent().getExtras().getString("ID"));
                     System.out.println("Actors size "+tmpList.size());
                     actors=new ArrayList<>();
@@ -215,11 +179,12 @@ public class SeriesActivity extends ActionBarActivity
             ArrayList<String> _episodes=new ArrayList();
             for(int i=0;i<episodeList.size();i++)
                 _episodes.add(episodeList.get(i).getEpisodeName());
-            extras.putSerializable("EPISODES",_episodes);
-            if(extras.getStringArrayList("ACTORS").size()==0)
-                extras.putSerializable("ACTORS",actors);
-            series.add(new MyTVSeries(extras.getString("TITLE"),description.getText().toString(),bitmap,extras.getStringArrayList("EPISODES"),extras.getString("ID"),
-                                      SerieFirstAired, extras.getStringArrayList("ACTORS"), episodeList));
+            //if(extras.getStringArrayList("ACTORS").size()==0)
+            extras.putSerializable("ACTORS",actors);
+            MyTVSeries tmp=new MyTVSeries(extras.getString("TITLE"),description.getText().toString(),bitmap,_episodes,extras.getString("ID"),
+                                          serieFirstAired, extras.getStringArrayList("ACTORS"), episodeList);
+            extras.putSerializable("EPISODES",tmp.getSeasons());
+            series.add(tmp);
             write(series);
         }
     }

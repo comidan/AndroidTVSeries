@@ -5,7 +5,10 @@ package test.tvdb.dev.com.tvdb_test;
  */
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -31,11 +34,14 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.melnykov.fab.FloatingActionButton;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Episode;
 import com.omertron.thetvdbapi.model.Series;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -118,20 +124,42 @@ public class SeriesInfo extends ActionBarActivity
             switch (extras.getInt("position")) {
                 case 0:
                     rootView = inflater.inflate(R.layout.fragment_test, container, false);
+                    final ArrayList<String> updatedWatches=new ArrayList<>();
                     episodesList = (ListView) rootView.findViewById(R.id.listView);
+                    FloatingActionButton fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
+                    fab.attachToListView(episodesList);
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            new UpdatedWatches().execute(updatedWatches);
+                        }
+                    });
                     ArrayList<Season> tmpSeasons =(ArrayList<Season>)extras.getSerializable("EPISODES");
-                    ArrayList<String> tmp=new ArrayList<>();
+                    ArrayList<String> tmp=new ArrayList<>(),tmpIDs=new ArrayList<>();
                     /*for(int i=0;i<tmpSeasons.size();i++)
                         for(int j=0;j<tmpSeasons.get(i).getEpisodesList().size();j++)
                             tmp.add(tmpSeasons.get(i).getEpisodesList().get(j).getEpisodeName());*/
                     for(Season s : tmpSeasons)
-                        for(int i=1; i<=s.getTotEpisodes(); i++)
+                        for(int i=1; i<=s.getTotEpisodes(); i++) {
                             tmp.add(s.getEpisode(i).getEpisodeName());
+                            tmpIDs.add(s.getEpisode(i).getId());
+                        }
                     //ArrayList<String> tmp = extras.getStringArrayList("EPISODES");
-                    boolean[] seen_tmp = new boolean[tmp.size()];
-                    Arrays.fill(seen_tmp, false);
+                    /*boolean[] seen_tmp = new boolean[tmp.size()];
+                    Arrays.fill(seen_tmp, false);*/
+                    Database db=new Database(getActivity());
+                    SQLiteDatabase sqlDb=db.getReadableDatabase();
+                    ArrayList<Boolean> watches=new ArrayList<>();
+                    for(Season s : tmpSeasons)
+                        for(int i=1; i<=s.getTotEpisodes(); i++){
+                            Cursor cursor=sqlDb.rawQuery("SELECT SEEN FROM EPISODES WHERE ID_EPISODES=" + s.getEpisode(i).getId(), null);
+                            while(cursor.moveToNext())
+                                watches.add(cursor.getInt(cursor.getColumnIndex("SEEN"))==0 ? false : true);
+                    }
+                    for(int i=0;i<watches.size();i++)
+                        System.out.println(watches.get(i));
                     EpisodesAdapter adapter = new EpisodesAdapter(getActivity(), Arrays.copyOf(tmp.toArray(), tmp.size(), String[].class),
-                            intent.getExtras().getString("ID"), seen_tmp);
+                            intent.getExtras().getString("ID"),updatedWatches,watches,Arrays.copyOf(tmpIDs.toArray(), tmpIDs.size(), String[].class));
                     episodesList.setAdapter(adapter);
                         /*episodesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
@@ -182,6 +210,45 @@ public class SeriesInfo extends ActionBarActivity
                 ((TextView)rootView.findViewById(R.id.textView)).setText(rating);
             }
         }
+
+        private class UpdatedWatches extends AsyncTask<ArrayList<String>,Void,Void>
+        {
+            @Override
+            protected Void doInBackground(ArrayList<String>... params) {
+                Database db=new Database(getActivity());
+                SQLiteDatabase sqlDb=db.getWritableDatabase();
+                ContentValues contentValues=new ContentValues();
+                for(int i=0;i<params[0].size();i++) {
+                    String data=params[0].get(i);
+                    String[] meta=data.split(" ");
+                    contentValues.put("SEEN",Integer.parseInt(meta[1]));
+                    sqlDb.update("EPISODES",contentValues,"ID_EPISODES="+meta[0],null);
+                }
+                sqlDb.close();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                Toast.makeText(getActivity(),"Watches updated",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        /*private class LoadWatches extends AsyncTask<Void,Void,Void>
+        {
+            private ArrayList<Boolean> watches=new ArrayList<>();
+
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+        }*/
 
         /*private class FetchEpisode extends AsyncTask<Void,Void,Void>
         {
