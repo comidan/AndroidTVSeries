@@ -123,7 +123,7 @@ public class GridViewAdapter extends ArrayAdapter {
                     intent.putExtra("ADD",exists);
                 }
                 SeriesActivity.launchAndAnimate((Activity)context,container.imageView,intent);
-                System.out.println(data.get(position).getTitle()+" "+data.get(position).getID());
+                //System.out.println(data.get(position).getTitle()+" "+data.get(position).getID());
             }
         });
         new DecodeByteArray().execute(container);

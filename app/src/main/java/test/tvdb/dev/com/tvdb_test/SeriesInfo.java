@@ -156,8 +156,6 @@ public class SeriesInfo extends ActionBarActivity
                             while(cursor.moveToNext())
                                 watches.add(cursor.getInt(cursor.getColumnIndex("SEEN"))==0 ? false : true);
                     }
-                    for(int i=0;i<watches.size();i++)
-                        System.out.println(watches.get(i));
                     EpisodesAdapter adapter = new EpisodesAdapter(getActivity(), Arrays.copyOf(tmp.toArray(), tmp.size(), String[].class),
                             intent.getExtras().getString("ID"),updatedWatches,watches,Arrays.copyOf(tmpIDs.toArray(), tmpIDs.size(), String[].class));
                     episodesList.setAdapter(adapter);

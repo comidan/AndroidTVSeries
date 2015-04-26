@@ -50,6 +50,7 @@ public class SearchFragment extends Fragment {
         search=(Button)rootView.findViewById(R.id.search_button);
         db = new Database(getActivity());
         myTvSeries=read();
+        //read();
         if(myTvSeries==null)
             myTvSeries=new ArrayList<>();
         search.setOnClickListener(new View.OnClickListener() {
@@ -167,47 +168,42 @@ public class SearchFragment extends Fragment {
 
     private ArrayList<MyTVSeries> read()
     {
-        /*try
-        {
-            FileInputStream fis=getActivity().openFileInput("TV_Series.dat");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<MyTVSeries> object=(ArrayList<MyTVSeries>)ois.readObject();
-            return object;
-        }
-        catch(FileNotFoundException exc)
-        {
-            return null;
-        }
-        catch(IOException exc)
-        {
-            return null;
-        }
-        catch(ClassNotFoundException exc)
-        {
-            return null;
-        }*/
+        /*AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                if((myTvSeries = db.getSeries()) != null)
+                    return true;
+                return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if(!result)
+                    Toast.makeText(getActivity(),"Could not read from database", Toast.LENGTH_SHORT).show();
+            }
+        };
+        task.execute(); */
         return db.getSeries();
     }
 
-    private void write(ArrayList<MyTVSeries> tvSeries)
+    private void write(final ArrayList<MyTVSeries> tvSeries)
     {
-        /*FileOutputStream fos;
-        try
-        {
-            fos=getActivity().openFileOutput("TV_Series.dat",Context.MODE_PRIVATE);
-            ObjectOutputStream oos=new ObjectOutputStream(fos);
-            oos.writeObject(tvSeries);
-            oos.close();
-            fos.close();
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }*/
-        db.storeSeries(tvSeries);
+        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                if(db.storeSeries(tvSeries))
+                    return true;
+                return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if(result)
+                    Toast.makeText(getActivity(),"Added successfully", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(getActivity(),"Problem while adding", Toast.LENGTH_SHORT).show();
+            }
+        };
+        task.execute();
+
     }
 }

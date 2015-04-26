@@ -19,6 +19,7 @@ public class MyTVSeriesListFragment extends Fragment
     private GridViewAdapter customGridAdapter;
     private ActionBar toolbar;
     private Database db;
+    private ArrayList<MyTVSeries> series;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -27,17 +28,17 @@ public class MyTVSeriesListFragment extends Fragment
         toolbar=((ActionBarActivity)getActivity()).getSupportActionBar();
         toolbar.setTitle("My TV Series");
         gridView=(GridView)rootView.findViewById(R.id.gridView);
-        new LoadImages().execute();
+        read();
         return rootView;
     }
 
     private class LoadImages extends AsyncTask<Void,Void,Void>
     {
-        ArrayList<MyTVSeries> series;
+        //ArrayList<MyTVSeries> series;
 
         @Override
         protected Void doInBackground(Void... params) {
-            series=read();
+            //series=read();
             return null;
         }
 
@@ -59,28 +60,25 @@ public class MyTVSeriesListFragment extends Fragment
         }
     }
 
-    private ArrayList<MyTVSeries> read()
+    private void read()
     {
-        /*try
-        {
-            FileInputStream fis=getActivity().openFileInput("TV_Series.dat");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<MyTVSeries> object=(ArrayList<MyTVSeries>)ois.readObject();
-            return object;
-        }
-        catch(FileNotFoundException exc)
-        {
-            return null;
-        }
-        catch(IOException exc)
-        {
-            return null;
-        }
-        catch(ClassNotFoundException exc)
-        {
-            return null;
-        }*/
-        return db.getSeries();
+        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                if((series = db.getSeries()) != null)
+                    return true;
+                return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if(!result)
+                    Toast.makeText(getActivity(),"Could not read from database", Toast.LENGTH_SHORT).show();
+                new LoadImages().execute();
+            }
+        };
+        task.execute();
+
     }
 
     @Override

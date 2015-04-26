@@ -46,6 +46,7 @@ public class SeriesActivity extends ActionBarActivity
     private ViewPager viewPager;
     private Toolbar toolbar;
     private Database db;
+    private ArrayList<MyTVSeries> series;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,16 +89,49 @@ public class SeriesActivity extends ActionBarActivity
             });
         description=(TextView)findViewById(R.id.description);
         db = new Database(this);
+        series = new ArrayList<>();
     }
 
-    private void write(ArrayList<MyTVSeries> tvSeries)
+    private void write(final ArrayList<MyTVSeries> tvSeries)
     {
-        db.storeSeries(tvSeries);
+        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                if(db.storeSeries(tvSeries))
+                    return true;
+                return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if(result)
+                    Toast.makeText(SeriesActivity.this,"Added successfully", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(SeriesActivity.this,"Problem while adding", Toast.LENGTH_SHORT).show();
+            }
+        };
+        task.execute();
+
     }
 
     private ArrayList<MyTVSeries> read()
     {
+        /*AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                if((series = db.getSeries()) != null)
+                    return true;
+                return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if(!result)
+                    Toast.makeText(SeriesActivity.this,"Could not read from database", Toast.LENGTH_SHORT).show();
+            }
+        };
+        task.execute();*/
         return db.getSeries();
+
     }
 
     private class FetchEpisode extends AsyncTask<Void,Void,Void>
@@ -171,8 +205,8 @@ public class SeriesActivity extends ActionBarActivity
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            ArrayList<MyTVSeries> series;
             series=read();
+            //read();
             Bitmap bitmap=((BitmapDrawable)image.getDrawable()).getBitmap();
             if(series==null)
                 series=new ArrayList<MyTVSeries>();
