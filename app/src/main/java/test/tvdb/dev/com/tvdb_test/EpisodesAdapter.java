@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Episode;
-
 import java.util.ArrayList;
 import java.util.List;
 

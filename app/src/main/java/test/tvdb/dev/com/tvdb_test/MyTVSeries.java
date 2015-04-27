@@ -1,8 +1,6 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.graphics.Bitmap;
-import android.util.Log;
-
 import com.omertron.thetvdbapi.model.Episode;
 
 import java.io.ByteArrayOutputStream;
