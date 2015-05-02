@@ -38,16 +38,12 @@ public class MyTVSeriesListFragment extends Fragment
 
         @Override
         protected Void doInBackground(Void... params) {
-            //series=read();
+            //series=read();                                NO MORE USELESS METHODS BRO!!
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            //System.out.println(series.size()+" "+series.get(0).getSeasons().size()+" "+series.get(0).getSeasons().get(0).getEpisodesList().size());
-            for(int i=0;i<series.get(0).getSeasons().size();i++)
-                for(int j=0;j<series.get(0).getSeasons().get(i).getEpisodesList().size();j++)
-                    System.out.println(series.get(0).getSeasons().get(i).getEpisodesList().get(j).getEpisodeName());
             customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,series);
             try
             {

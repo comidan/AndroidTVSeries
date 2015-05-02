@@ -1,7 +1,6 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,39 +10,30 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Actor;
 import com.omertron.thetvdbapi.model.Episode;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SeriesActivity extends ActionBarActivity
 {
     private ImageView image;
-    private ListView episodesList;
     private TextView description;
     private Bundle extras;
     private TheTVDBApi tvDB;
     private List<Episode> episodeList;
-    private SlidingTabLayout tabLayout;
-    private ViewPager viewPager;
     private Toolbar toolbar;
     private Database db;
     private ArrayList<MyTVSeries> series;
@@ -56,8 +46,8 @@ public class SeriesActivity extends ActionBarActivity
         setSupportActionBar(toolbar);
         extras=getIntent().getExtras();
         final String title=extras.getString("TITLE");
-        toolbar.setTitle("My TV Series");
-        toolbar.setSubtitle(title);
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         image=(ImageView)findViewById(R.id.poster);
         boolean add=extras.getBoolean("ADD");
         if(!add&&extras.getBoolean("IS_SEARCHED"))
@@ -90,6 +80,21 @@ public class SeriesActivity extends ActionBarActivity
         description=(TextView)findViewById(R.id.description);
         db = new Database(this);
         series = new ArrayList<>();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
     }
 
     private void write(final ArrayList<MyTVSeries> tvSeries)

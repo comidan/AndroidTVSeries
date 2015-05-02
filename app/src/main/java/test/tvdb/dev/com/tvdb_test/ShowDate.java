@@ -45,12 +45,10 @@ public class ShowDate
                 System.out.println(toBeSeen);
                 toBeSeen++;
                 metaData.index=toBeSeen;
-                System.out.println((tmpSeasons.get(0).getSeasonNumber()==0)+" "+tmpSeasons.get(0).getSeasonNumber());
                 if(tmpSeasons.get(0).getSeasonNumber()==0)
                     metaData.seasonOffset=1;
                 else
                     metaData.seasonOffset=0;
-                System.out.println(metaData.seasonOffset);
                 break;
             }
             tmpCount+=tmpSeasons.get(i).getTotEpisodes();

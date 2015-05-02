@@ -22,7 +22,6 @@ public class GridViewAdapter extends ArrayAdapter {
     private int layoutResourceId;
     private ArrayList<MyTVSeries> data,backup;
     private boolean isCalledFromSearch;
-    private ImageView imageView;
 
     public GridViewAdapter(Context context,int layoutResourceId,ArrayList<MyTVSeries> data)
     {
