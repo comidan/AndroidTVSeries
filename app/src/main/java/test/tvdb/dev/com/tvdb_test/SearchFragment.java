@@ -77,7 +77,6 @@ public class SearchFragment extends Fragment {
     private class DownloadSeriesData extends AsyncTask<String,Void,Bitmap[]>  //TODO implement serial AsyncTasks for each series
     {
         private List<Episode>[] episodes;
-        private Banners banner;
         private List<Series> results,backup;
 
         @Override
@@ -153,7 +152,6 @@ public class SearchFragment extends Fragment {
         protected void onPostExecute(Bitmap[] bitmap) {
             bar.setVisibility(View.INVISIBLE);
             bar.setIndeterminate(false);
-            //System.out.println("Valid series found : "+backup.size());
             GridView gridView=(GridView)rootView.findViewById(R.id.gridView);
             GridViewAdapter customGridAdapter = new GridViewAdapter(getActivity(),R.layout.grid_cell,backup,bitmap,myTvSeries);
             gridView.setAdapter(customGridAdapter);
@@ -162,21 +160,6 @@ public class SearchFragment extends Fragment {
 
     private ArrayList<MyTVSeries> read()
     {
-        /*AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                if((myTvSeries = db.getSeries()) != null)
-                    return true;
-                return false;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if(!result)
-                    Toast.makeText(getActivity(),"Could not read from database", Toast.LENGTH_SHORT).show();
-            }
-        };
-        task.execute(); */
         return db.getSeries();
     }
 

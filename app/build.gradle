@@ -19,7 +19,6 @@ android {
     }
 
     packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE'
@@ -29,9 +28,9 @@ android {
 }
 
 dependencies {
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.melnykov:floatingactionbutton:1.3.0'
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
 }
