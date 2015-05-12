@@ -16,20 +16,23 @@ import com.omertron.thetvdbapi.model.Episode;
 import com.omertron.thetvdbapi.model.Series;
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Handler;
 
 public class GridViewAdapter extends ArrayAdapter {
     private Context context;
     private int layoutResourceId;
     private ArrayList<MyTVSeries> data,backup;
     private boolean isCalledFromSearch;
+    private Handler handler;
 
-    public GridViewAdapter(Context context,int layoutResourceId,ArrayList<MyTVSeries> data)
+    public GridViewAdapter(Context context,int layoutResourceId,ArrayList<MyTVSeries> data,Handler handler)
     {
         super(context, layoutResourceId, data);
         isCalledFromSearch=false;
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = data;
+        this.handler=handler;
     }
 
     public GridViewAdapter(Context context,int layoutResourceId,List<Series> series,List<Episode>[] episodes,Bitmap[] posters,
@@ -124,6 +127,8 @@ public class GridViewAdapter extends ArrayAdapter {
             }
         });
         new DecodeByteArray().execute(container);
+        if(position==data.size()-1&&handler!=null)
+            handler.sendEmptyMessage(0);
         return row;
     }
 

@@ -47,6 +47,10 @@ public class MainActivity extends ActionBarActivity
         });
         drawerList.setAdapter(new ArrayAdapter<String>(this,R.layout.drawer_list_item,menuTitles));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame,new MyTVSeriesListFragment()).commit();
+        drawerList.setItemChecked(1,true);
+        getSupportActionBar().setTitle(menuTitles[1]);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener
@@ -61,9 +65,7 @@ public class MainActivity extends ActionBarActivity
                 default:fragment=new MyTVSeriesListFragment();
             }
             FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                           .replace(R.id.content_frame, fragment)
-                           .commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
             drawerList.setItemChecked(position, true);
             getSupportActionBar().setTitle(menuTitles[position]);
             drawerLayout.closeDrawer(drawerList);
