@@ -2,6 +2,9 @@ package test.tvdb.dev.com.tvdb_test;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
@@ -124,7 +127,9 @@ public class MyTVSeriesListFragment extends Fragment
                                 ArrayList<String> titleEpisodesUpdate=new ArrayList<>();
                                 for(int k=0;i<fullEpisodeUpdate.size();k++)
                                     titleEpisodesUpdate.add(fullEpisodeUpdate.get(k).getEpisodeName());
-                                series.get(j).setEpisodes(titleEpisodesUpdate);
+                                //series.get(j).setEpisodes(titleEpisodesUpdate);
+                                MyTVSeries tmp = series.get(j);
+                                series.set(j, new MyTVSeries(tmp.getTitle(),tmp.getDescription(), tmp.getBitmapPoster(), titleEpisodesUpdate, tmp.getID(), tmp.getFirstAired(), tmp.getActors(), fullEpisodeUpdate));
                             }
                 }
             }

@@ -14,6 +14,7 @@ import com.omertron.thetvdbapi.model.Episode;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Emil on 04/04/2015.
@@ -42,7 +43,7 @@ public class Database  extends SQLiteOpenHelper{
 
     //TODO If something being modified in here, modify also DATABASE_VERSION
 
-    public Database(Context context) { super(context, DATABASE_NAME, null ,DATABASE_VERSON); }
+    public Database(Context context) { super(context, DATABASE_NAME, null, DATABASE_VERSON); }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -79,25 +80,26 @@ public class Database  extends SQLiteOpenHelper{
                 values.put("RELEASE_DATE", myserie.getFirstAired());
                 values.put("LANGUAGE", "en"); //temporaly only english
                 values.put("POSTER", myserie.getPoster());
-                for (int i = 0; i < myserie.getTotSeasons(); i++) {
-                    ContentValues values1 = new ContentValues();
+                for (int i = myserie.getFirstSeasonNumber(); i < myserie.getTotSeasons(); i++) {
                     Season s = myserie.getSeason(i);
+                    storeSeason(s,myserie.getID());
+                    /*ContentValues values1 = new ContentValues();
                     values1.put("ID_SEASONS", s.getID());
                     values1.put("NUMBER", s.getSeasonNumber());
-                    values1.put("id_series", myserie.getID());
-                    for (int j = 1; j <= s.getTotEpisodes(); j++) {
-                        ContentValues values2 = new ContentValues();
+                    values1.put("id_series", myserie.getID()); */
+                    for (int j = 1; j <= s.getTotEpisodes(); j++)
+                        storeEpisode(s.getEpisode(j),s.getID());
+                        /*{ContentValues values2 = new ContentValues();
                         Episode e = s.getEpisode(j);
                         values2.put("ID_EPISODES", e.getId());
                         values2.put("TITLE", e.getEpisodeName());
                         values2.put("OVERVIEW", e.getOverview());
                         values2.put("NUMBER", e.getEpisodeNumber());
-                        values2.put("SEEN", 0); //episode seen or not, 0 false and 1 true. FOR NOW IS SET TO 0
+                        values2.put("SEEN", 0);
                         values2.put("RELEASE_DATE", e.getFirstAired());
                         values2.put("id_season", s.getID());
-                        db.insert(EPISODES_TABLE, null, values2);
-                    }
-                    db.insert(SEASONS_TABLE, null, values1);
+                        db.insert(EPISODES_TABLE, null, values2); }*/
+                    //db.insert(SEASONS_TABLE, null, values1);
                 }
                 ArrayList<String> actors = myserie.getActors();
                 for(int k = 0; k < actors.size(); k++){
@@ -180,6 +182,89 @@ public class Database  extends SQLiteOpenHelper{
             e.printStackTrace();
             return null;
         }
+    }
+
+    private boolean storeEpisode(Episode e, String ID_SEASON){
+        try{
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put("ID_EPISODES", e.getId());
+            cv.put("TITLE", e.getEpisodeName());
+            cv.put("OVERVIEW", e.getOverview());
+            cv.put("NUMBER", e.getEpisodeNumber());
+            cv.put("SEEN", 0);  //episode seen or not, 0 false and 1 true. FOR NOW IS SET TO 0
+            cv.put("RELEASE_DATE", e.getFirstAired());
+            cv.put("id_season", ID_SEASON);
+            db.insert(EPISODES_TABLE, null, cv);
+            return true;
+
+        } catch (SQLiteException ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean storeSeason(Season s, String ID_SERIE){
+        try{
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put("ID_SEASONS", s.getID());
+            cv.put("NUMBER", s.getSeasonNumber());
+            cv.put("id_series", ID_SERIE);
+            db.insert(SEASONS_TABLE, null, cv);
+            return true;
+        } catch (SQLiteException ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateSeries(ArrayList<MyTVSeries> series){
+        try {
+            ArrayList<MyTVSeries> stored = getSeries();
+            for (int i = 0; i < series.size(); i++) {
+                MyTVSeries tmp = series.get(i);
+                MyTVSeries tmp2 = stored.get(stored.indexOf(tmp));
+                //Se l' ultima stagione presente coincide con quella aggiornata
+                if (tmp.getLastSeasonNumber() == tmp2.getLastSeasonNumber()) {
+                    //Se gli episodi dell' ultima stagione non coincidono con gli episodi aggiornati vengono salvati
+                    if (tmp.getLastSeason().getTotEpisodes() != tmp2.getLastSeason().getTotEpisodes()) {
+                        //Aggiungere episodi mancanti al database
+                        List<Episode> missing = tmp.getLastSeason().getEpisodesList().subList(tmp2.getLastSeason().getTotEpisodes(), tmp.getLastSeason().getTotEpisodes());
+                        for (Episode e : missing)
+                            storeEpisode(e, tmp.getLastSeason().getID());
+                    }
+                //Se non coincidono invece
+                } else {
+                    //Salvo prima gli eventuali episodi mancanti dell' ultima stagione presente nel database in modo che la stagione sia completa
+                    int x = tmp2.getLastSeasonNumber();
+                    if (tmp2.getLastSeason().getTotEpisodes() != tmp.getSeason(x).getTotEpisodes()) {
+                        List<Episode> missing = tmp.getSeason(x).getEpisodesList().subList(tmp2.getLastSeason().getTotEpisodes(), tmp.getSeason(x).getTotEpisodes());
+                        for (Episode e : missing)
+                            storeEpisode(e, tmp.getLastSeason().getID());
+                    }
+                    //Una volta controllato, aggiungo le stagioni mancanti e i loro episodi
+                    for (int j = 1 + tmp2.getLastSeasonNumber(); j <= tmp.getLastSeasonNumber(); j++) {
+                        Season s = tmp.getSeason(j);
+                        storeSeason(s, tmp.getID());
+                        for (int k = 1; k <= s.getTotEpisodes(); k++)
+                            storeEpisode(s.getEpisode(k), s.getID());
+                    }
+
+                }
+                //Per le stagioni speciali(Season 0)
+                if(tmp2.getSeason(0)!=null && tmp.getSeason(0)!=null && tmp2.getSeason(0).getTotEpisodes()!=tmp.getSeason(0).getTotEpisodes()){
+                    List<Episode> missing = tmp.getSeason(0).getEpisodesList().subList(tmp2.getSeason(0).getTotEpisodes(), tmp.getSeason(0).getTotEpisodes());
+                    for(Episode e : missing)
+                        storeEpisode(e, tmp.getSeason(0).getID());
+                }
+            }
+            return true;
+        } catch (Exception ex){
+            ex.printStackTrace();
+            return false;
+        }
+
     }
 
     //TODO

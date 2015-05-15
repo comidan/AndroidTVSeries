@@ -12,6 +12,7 @@ public class MyTVSeries implements Serializable
     private String title,description,id,firstAired;
     private ArrayList<String> episodes,actors;
     private byte[] image;
+    private Bitmap poster;
     private List<Episode> episodeList;
     private ArrayList<Season> seasons;
 
@@ -23,6 +24,7 @@ public class MyTVSeries implements Serializable
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         poster.compress(Bitmap.CompressFormat.PNG, 0, bos);
         image=bos.toByteArray();
+        this.poster = poster;
         this.episodes = episodes;
         this.id=id;
         this.actors=actors;
@@ -48,10 +50,7 @@ public class MyTVSeries implements Serializable
         this.actors = actors;
     }
 
-    public void setEpisodes(ArrayList<String> episodes)
-    {
-        this.episodes=episodes;
-    }
+    public void setEpisodes(ArrayList<String> episodes) { this.episodes=episodes; }
 
     public String getTitle() {
         return title;
@@ -64,6 +63,8 @@ public class MyTVSeries implements Serializable
     public byte[] getPoster() {
         return image;
     }
+
+    public Bitmap getBitmapPoster() { return poster; }
 
     public byte[] getBitmapArray()
     {
@@ -85,7 +86,35 @@ public class MyTVSeries implements Serializable
 
     public int getTotSeasons(){ return seasons.size(); }
 
-    public Season getSeason(int seasonNumber){ return seasons.get(seasonNumber);}
+    public int getLastSeasonNumber(){
+        if(seasons.size()>0)
+            return seasons.get(seasons.size()-1).getSeasonNumber();
+        return 0;
+    }
+
+    public Season getLastSeason(){
+        if(seasons.size()>0)
+            return seasons.get(seasons.size() - 1);
+        return null;
+    }
+
+    public int getFirstSeasonNumber(){
+        if(seasons.size()>0)
+            return seasons.get(0).getSeasonNumber();
+        return -1;
+    }
+
+    public Season getSeason(int seasonNumber){
+        //return seasons.get(seasonNumber);
+
+        //for a more strict control
+        int i = 0;
+        while(seasons.get(i).getSeasonNumber()!=seasonNumber)
+            i++;
+        if(seasons.get(i).getSeasonNumber()==seasonNumber)
+            return seasons.get(i);
+        else return null;
+    }
 
     public ArrayList<Season> getSeasons(){ return seasons; }
 
@@ -102,12 +131,18 @@ public class MyTVSeries implements Serializable
                    noSeason0 = false;
                if(!noSeason0)
                    seasons.get(j).addEpisode(e);
-               else seasons.get(j-1).addEpisode(e);
+               else seasons.get(j-1).addEpisode(e); //i.e season 1 goes in array[0]
            }
            else {
                j++;
                i--;
            }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (this.id.equals(((MyTVSeries) o).getID()));
+
     }
 }
