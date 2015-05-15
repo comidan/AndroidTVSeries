@@ -129,8 +129,9 @@ public class MyTVSeriesListFragment extends Fragment
                                     titleEpisodesUpdate.add(fullEpisodeUpdate.get(k).getEpisodeName());
                                 //series.get(j).setEpisodes(titleEpisodesUpdate);
                                 MyTVSeries tmp = series.get(j);
-                                series.set(j, new MyTVSeries(tmp.getTitle(),tmp.getDescription(), tmp.getBitmapPoster(), titleEpisodesUpdate, tmp.getID(), tmp.getFirstAired(), tmp.getActors(), fullEpisodeUpdate));
+                                series.set(j, new MyTVSeries(tmp.getTitle(), tmp.getDescription(), tmp.getBitmapPoster(), titleEpisodesUpdate, tmp.getID(), tmp.getFirstAired(), tmp.getActors(), fullEpisodeUpdate));
                             }
+                    new Database(getActivity()).updateSeries(series);
                 }
             }
             catch(Exception exc)
