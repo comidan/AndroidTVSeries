@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,7 +103,8 @@ public class SeriesInfo extends ActionBarActivity
 
     public static class MyFragment extends Fragment
     {
-        private ListView episodesList,actorList;
+        private ListView actorList;
+        private ExpandableListView episodesList;
         private TheTVDBApi tvDB;
         private View rootView;
         private static Toolbar toolbar;
@@ -124,20 +126,23 @@ public class SeriesInfo extends ActionBarActivity
             final Bundle extras = getArguments();
             switch (extras.getInt("position")) {
                 case 0:
-                    rootView = inflater.inflate(R.layout.fragment_test, container, false);
+                    rootView = inflater.inflate(R.layout.fragment_episodes, container, false);
                     final ArrayList<String> updatedWatches=new ArrayList<>();
-                    episodesList = (ListView) rootView.findViewById(R.id.listView);
+                    episodesList = (ExpandableListView) rootView.findViewById(R.id.listView);
                     final ArrayList<Season> tmpSeasons =(ArrayList<Season>)extras.getSerializable("EPISODES");
-                    ArrayList<String> tmp=new ArrayList<>(),tmpIDs=new ArrayList<>();
+                    ArrayList<String> tmp=new ArrayList<>();
+                    ArrayList<ArrayList<String>> tmpIDs=new ArrayList<>();
                     Database db=new Database(getActivity());
                     SQLiteDatabase sqlDb=db.getReadableDatabase();
-                    final ArrayList<Boolean> watches=new ArrayList<>();
-                    for(Season s : tmpSeasons)
-                        for(int i=1; i<=s.getTotEpisodes(); i++){
-                            Cursor cursor=sqlDb.rawQuery("SELECT SEEN FROM EPISODES WHERE ID_EPISODES=" + s.getEpisode(i).getId(), null);
-                            while(cursor.moveToNext())
-                                watches.add(cursor.getInt(cursor.getColumnIndex("SEEN"))==0 ? false : true);
+                    final ArrayList<ArrayList<Boolean>> watches=new ArrayList<>();
+                    for(int j=0;j<tmpSeasons.size();j++) {
+                        watches.add(new ArrayList<Boolean>());
+                        for (int i = 1; i <= tmpSeasons.get(j).getTotEpisodes(); i++) {
+                            Cursor cursor = sqlDb.rawQuery("SELECT SEEN FROM EPISODES WHERE ID_EPISODES=" + tmpSeasons.get(j).getEpisode(i).getId(), null);
+                            while (cursor.moveToNext())
+                                watches.get(j).add(cursor.getInt(cursor.getColumnIndex("SEEN")) == 0 ? false : true);
                         }
+                    }
                     FloatingActionButton fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
                     fab.attachToListView(episodesList);
                     fab.setOnClickListener(new View.OnClickListener() {
@@ -151,18 +156,20 @@ public class SeriesInfo extends ActionBarActivity
                             new FetchDate().execute(metaData);
                         }
                     });
-                    for(Season s : tmpSeasons)
-                        for(int i=1; i<=s.getTotEpisodes(); i++) {
-                            tmp.add(s.getEpisode(i).getEpisodeName());
-                            tmpIDs.add(s.getEpisode(i).getId());
+                    for(int j=0;j<tmpSeasons.size();j++) {
+                        tmpIDs.add(new ArrayList<String>());
+                        for (int i = 1; i <=tmpSeasons.get(j).getTotEpisodes(); i++) {
+                            tmp.add(tmpSeasons.get(j).getEpisode(i).getEpisodeName());
+                            tmpIDs.get(j).add(tmpSeasons.get(j).getEpisode(i).getId());
                         }
+                    }
                     ShowDate showDate=new ShowDate(watches);
                     MetaEpisode metaData=new MetaEpisode();
                     metaData.id=extras.getString("ID");
                     showDate.fillMetaData(metaData, tmpSeasons);
                     new FetchDate().execute(metaData);
                     EpisodesAdapter adapter = new EpisodesAdapter(getActivity(), Arrays.copyOf(tmp.toArray(), tmp.size(), String[].class),
-                            intent.getExtras().getString("ID"),updatedWatches,watches,Arrays.copyOf(tmpIDs.toArray(), tmpIDs.size(), String[].class));
+                            intent.getExtras().getString("ID"),updatedWatches,watches,tmpIDs,tmpSeasons);
                     episodesList.setAdapter(adapter);
                     return rootView;
                 case 1:
@@ -170,15 +177,14 @@ public class SeriesInfo extends ActionBarActivity
                     new GetRating().execute();
                     return rootView;
                 case 2:
-                    rootView = inflater.inflate(R.layout.fragment_test, container, false);
-                    actorList = (ListView) rootView.findViewById(R.id.listView);
+                    rootView = inflater.inflate(R.layout.fragment_actors, container, false);
+                    actorList = (ListView) rootView.findViewById(R.id.actors_list);
                     ArrayList<String> _tmp = extras.getStringArrayList("ACTORS");
                     ArrayAdapter<String> _adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,
                                                                            Arrays.copyOf(_tmp.toArray(), _tmp.size(), String[].class));
                     actorList.setAdapter(_adapter);
 
                 default : return rootView;
-
             }
         }
 
@@ -196,7 +202,14 @@ public class SeriesInfo extends ActionBarActivity
                     if(!params[0].full) {
                         if (params[0].season == 0)
                             params[0].season += params[0].seasonOffset;
-                        episode = tvDB.getEpisode(params[0].id, params[0].season, params[0].index, "en");
+                        try
+                        {
+                            episode = tvDB.getEpisode(params[0].id, params[0].season, params[0].index, "en");
+                        }
+                        catch(TvDbException exc)
+                        {
+                            episode = tvDB.getEpisode(params[0].id, params[0].season+1, params[0].index, "en");
+                        }
                         String date = episode.getFirstAired();
                         String[] splitDate = date.split("-");
                         Date currentDate = new Date();
@@ -233,7 +246,7 @@ public class SeriesInfo extends ActionBarActivity
                 try
                 {
                     if(tvDB==null)
-                        tvDB=new TheTVDBApi("2C8BD989F33B0C84");  //TODO create one intance in the fragment management..
+                        tvDB=new TheTVDBApi("2C8BD989F33B0C84");
                     Series series=tvDB.getSeries(intent.getExtras().getString("ID"),"en");
                     rating=series.getRating();
                 }

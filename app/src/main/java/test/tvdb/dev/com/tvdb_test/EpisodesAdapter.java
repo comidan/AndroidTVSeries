@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -14,13 +15,14 @@ import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Episode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by daniele on 22/03/2015.
  */
 
-public class EpisodesAdapter extends ArrayAdapter<String>
+public class EpisodesAdapter extends BaseExpandableListAdapter
 {
     private final Context context;
     private final String[] values;
@@ -28,11 +30,13 @@ public class EpisodesAdapter extends ArrayAdapter<String>
     private List<Episode> episodeList;
     private String id;
     private ArrayList<String> updatedWatches;
-    private ArrayList<Boolean> watches;
-    private String[] IDs;
+    private ArrayList<ArrayList<Boolean>> watches;
+    private ArrayList<ArrayList<String>> IDs;
+    private ArrayList<Season> fullValues;
 
-    public EpisodesAdapter(Context context, String[] values, String id,ArrayList<String> updatedWatches,ArrayList<Boolean> watches,String[] IDs) {
-        super(context,R.layout.episode_row, values);
+    public EpisodesAdapter(Context context, String[] values, String id,ArrayList<String> updatedWatches,ArrayList<ArrayList<Boolean>> watches,
+                           ArrayList<ArrayList<String>> IDs,ArrayList<Season> fullValues) {
+        //super(context,R.layout.episode_row, values);
         this.context = context;
         this.values = values;
         this.id = id;
@@ -41,24 +45,26 @@ public class EpisodesAdapter extends ArrayAdapter<String>
             this.updatedWatches=new ArrayList<>();
         this.watches=watches;
         this.IDs=IDs;
+        this.fullValues=fullValues;
+
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView,
+                             final ViewGroup parent) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View rowView = inflater.inflate(R.layout.episode_row, parent, false);
         TextView textView = (TextView) rowView.findViewById(R.id.episode_label);
         CheckBox checkBox = (CheckBox) rowView.findViewById(R.id.episode_seen);
-        checkBox.setChecked(watches.get(position));
+        checkBox.setChecked(watches.get(groupPosition).get(childPosition));
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                watches.set(position,isChecked);
-                updatedWatches.add(IDs[position] + " " + (isChecked ? 1 : 0));
+                watches.get(groupPosition).set(childPosition,isChecked);
+                updatedWatches.add(IDs.get(groupPosition).get(childPosition) + " " + (isChecked ? 1 : 0));
             }
         });
-        textView.setText(values[position]);
+        textView.setText(fullValues.get(groupPosition).getEpisodesList().get(childPosition).getEpisodeName());
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,6 +72,72 @@ public class EpisodesAdapter extends ArrayAdapter<String>
             }
         });
         return rowView;
+    }
+
+    @Override
+    public int getGroupCount() {
+        return fullValues.size();
+    }
+
+    @Override
+    public int getChildrenCount(int groupPosition) {
+        return fullValues.get(groupPosition).getTotEpisodes();
+    }
+
+    @Override
+    public Object getGroup(int groupPosition) {
+        return fullValues.get(groupPosition).getSeasonNumber();
+    }
+
+    @Override
+    public Object getChild(int groupPosition, int childPosition) {
+        return fullValues.get(groupPosition).getEpisodesList().get(childPosition).getEpisodeName();
+    }
+
+    @Override
+    public long getGroupId(int groupPosition) {
+        return 0;
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+        return 0;
+    }
+
+
+    private static final class ViewHolder {
+        TextView textLabel;
+    }
+
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        View resultView = convertView;
+        ViewHolder holder;
+
+        if (resultView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            resultView = inflater.inflate(android.R.layout.simple_list_item_1, null);
+            holder = new ViewHolder();
+            holder.textLabel = (TextView) resultView.findViewById(android.R.id.text1);
+            resultView.setTag(holder);
+        } else {
+            holder = (ViewHolder) resultView.getTag();
+        }
+
+        holder.textLabel.setText("Season "+fullValues.get(groupPosition).getSeasonNumber());
+
+        return resultView;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
     }
 
     private class FetchEpisode extends AsyncTask<Void,Void,Void>

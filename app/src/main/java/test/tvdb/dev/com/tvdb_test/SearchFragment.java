@@ -44,7 +44,6 @@ public class SearchFragment extends Fragment {
         search=(Button)rootView.findViewById(R.id.search_button);
         db = new Database(getActivity());
         myTvSeries=read();
-        //read();
         if(myTvSeries==null)
             myTvSeries=new ArrayList<>();
         search.setOnClickListener(new View.OnClickListener() {

@@ -52,6 +52,14 @@ public class MyTVSeries implements Serializable
 
     public void setEpisodes(ArrayList<String> episodes) { this.episodes=episodes; }
 
+    public void setEpisodes(List<Episode> episodes)
+    {
+        ArrayList<String> tmp=new ArrayList<>();
+        for(int i=0;i<episodes.size();i++)
+            tmp.add(episodes.get(i).getEpisodeName());
+        this.episodes=tmp;
+    }
+
     public String getTitle() {
         return title;
     }

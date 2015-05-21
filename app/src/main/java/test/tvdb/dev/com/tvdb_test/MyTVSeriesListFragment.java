@@ -124,12 +124,7 @@ public class MyTVSeriesListFragment extends Fragment
                         for(int j=0;j<series.size();j++)
                             if(series.get(j).getID().equals(updateList.get(i).getId())) {
                                 List<Episode> fullEpisodeUpdate=tvDB.getAllEpisodes(updateList.get(i).getId(),"en");
-                                ArrayList<String> titleEpisodesUpdate=new ArrayList<>();
-                                for(int k=0;i<fullEpisodeUpdate.size();k++)
-                                    titleEpisodesUpdate.add(fullEpisodeUpdate.get(k).getEpisodeName());
-                                //series.get(j).setEpisodes(titleEpisodesUpdate);
-                                MyTVSeries tmp = series.get(j);
-                                series.set(j, new MyTVSeries(tmp.getTitle(), tmp.getDescription(), tmp.getBitmapPoster(), titleEpisodesUpdate, tmp.getID(), tmp.getFirstAired(), tmp.getActors(), fullEpisodeUpdate));
+                                series.get(j).setEpisodes(fullEpisodeUpdate);
                             }
                     new Database(getActivity()).updateSeries(series);
                 }

@@ -7,52 +7,57 @@ import java.util.ArrayList;
  */
 public class ShowDate
 {
-    private ArrayList<Boolean> watches;
+    private ArrayList<ArrayList<Boolean>> watches;
 
-    public ShowDate(ArrayList<Boolean> watches)
+    public ShowDate(ArrayList<ArrayList<Boolean>> watches)
     {
         this.watches=watches;
     }
 
-    private int getNextIndexShowDate()
+    private class ShowIndex
     {
-        int i=0;
+        int season;
+        int episode;
+
+        public ShowIndex(int season,int episode)
+        {
+            this.season=season;
+            this.episode=episode;
+        }
+    }
+
+    private ShowIndex getNextIndexShowDate()
+    {
+        int i,j;
         try
         {
-            while (watches.get(i))
-                i++;
-            return i;
+            for(j=0;j<watches.size();j++)
+                for(i=0;i<watches.get(j).size();i++)
+                    if(!watches.get(j).get(i))
+                        return new ShowIndex(j,i+1);
+            return new ShowIndex(-1,-1);
+
         }
         catch (IndexOutOfBoundsException exc)
         {
-               return -1;
+               return new ShowIndex(-1,-1);
         }
 
     }
 
     void fillMetaData(MetaEpisode metaData,ArrayList<Season> tmpSeasons)
     {
-        int toBeSeen=getNextIndexShowDate();
-        if(toBeSeen==-1)
+        ShowIndex toBeSeen=getNextIndexShowDate();
+        if(toBeSeen.episode==-1)
             metaData.full=true;
         else
             metaData.full=false;
-        for(int i=0,tmpCount=0;i<tmpSeasons.size();i++) {
-            if (toBeSeen>=tmpCount&&toBeSeen<tmpCount+tmpSeasons.get(i).getTotEpisodes()) {
-                metaData.season=tmpSeasons.get(i).getSeasonNumber();
-                for(int j=i-1;j>=0;j--)
-                    toBeSeen-=tmpSeasons.get(j).getTotEpisodes();
-                System.out.println(toBeSeen);
-                toBeSeen++;
-                metaData.index=toBeSeen;
-                if(tmpSeasons.get(0).getSeasonNumber()==0)
-                    metaData.seasonOffset=1;
-                else
-                    metaData.seasonOffset=0;
-                break;
-            }
-            tmpCount+=tmpSeasons.get(i).getTotEpisodes();
-        }
+        metaData.season=toBeSeen.season;
+        metaData.index=toBeSeen.episode;
+        if(tmpSeasons.get(0).getSeasonNumber()==0)
+            metaData.seasonOffset=1;
+        else
+            metaData.seasonOffset=0;
     }
 
 }
