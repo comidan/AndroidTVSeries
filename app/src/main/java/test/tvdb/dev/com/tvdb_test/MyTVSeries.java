@@ -117,8 +117,16 @@ public class MyTVSeries implements Serializable
 
         //for a more strict control
         int i = 0;
-        while(seasons.get(i).getSeasonNumber()!=seasonNumber)
-            i++;
+        try
+        {
+            while (seasons.get(i).getSeasonNumber() != seasonNumber)
+                i++;
+        }
+        catch(IndexOutOfBoundsException exc)
+        {
+            if(seasonNumber==0&&seasons.get(0).getSeasonNumber()==1)            //in case of minxed seasonNumber value
+                return seasons.get(0);                                          //(for example passing 0 when seasons start from 1)
+        }
         if(seasons.get(i).getSeasonNumber()==seasonNumber)
             return seasons.get(i);
         else return null;

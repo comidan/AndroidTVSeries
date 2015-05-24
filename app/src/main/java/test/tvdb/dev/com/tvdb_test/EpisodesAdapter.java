@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -15,7 +14,6 @@ import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Episode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -36,7 +34,6 @@ public class EpisodesAdapter extends BaseExpandableListAdapter
 
     public EpisodesAdapter(Context context, String[] values, String id,ArrayList<String> updatedWatches,ArrayList<ArrayList<Boolean>> watches,
                            ArrayList<ArrayList<String>> IDs,ArrayList<Season> fullValues) {
-        //super(context,R.layout.episode_row, values);
         this.context = context;
         this.values = values;
         this.id = id;
@@ -124,8 +121,8 @@ public class EpisodesAdapter extends BaseExpandableListAdapter
         } else {
             holder = (ViewHolder) resultView.getTag();
         }
-
-        holder.textLabel.setText("Season "+fullValues.get(groupPosition).getSeasonNumber());
+        int tmp=fullValues.get(groupPosition).getSeasonNumber();
+        holder.textLabel.setText(tmp>0 ? "  Season "+tmp : "  Special episodes");
 
         return resultView;
     }
