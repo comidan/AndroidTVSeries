@@ -15,7 +15,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
-import com.omertron.thetvdbapi.model.Banners;
 import com.omertron.thetvdbapi.model.Episode;
 import com.omertron.thetvdbapi.model.Series;
 import java.io.IOException;
@@ -80,6 +79,11 @@ public class SearchFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
+            GridView gridView=(GridView)rootView.findViewById(R.id.gridView);
+            Bitmap[] tmp=new Bitmap[0];
+            GridViewAdapter customGridAdapter=new GridViewAdapter(getActivity(),R.layout.grid_cell,new ArrayList<Series>(),tmp,
+                                                                    new ArrayList<MyTVSeries>());
+            gridView.setAdapter(customGridAdapter);
             bar.setVisibility(View.VISIBLE);
             bar.setIndeterminate(true);
         }
@@ -98,11 +102,9 @@ public class SearchFragment extends Fragment {
                 {
                     try
                     {
-                        Series tmp;
-                        System.out.println((tmp=tvDB.getSeries(results.get(i).getId(),"en")).getPoster());
+                        Series tmp=tvDB.getSeries(results.get(i).getId(),"en");
                         InputStream in=new java.net.URL(tmp.getPoster()).openStream();
                         poster[i]=Bitmap.createScaledBitmap(BitmapFactory.decodeStream(in),230,320,true);
-                        System.out.println(i);
                     }
                     catch(IndexOutOfBoundsException exc)
                     {
@@ -160,26 +162,5 @@ public class SearchFragment extends Fragment {
     private ArrayList<MyTVSeries> read()
     {
         return db.getSeries();
-    }
-
-    private void write(final ArrayList<MyTVSeries> tvSeries)
-    {
-        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                if(db.storeSeries(tvSeries))
-                    return true;
-                return false;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if(result)
-                    Toast.makeText(getActivity(),"Added successfully", Toast.LENGTH_SHORT).show();
-                else Toast.makeText(getActivity(),"Problem while adding", Toast.LENGTH_SHORT).show();
-            }
-        };
-        task.execute();
-
     }
 }
