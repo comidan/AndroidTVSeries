@@ -2,5 +2,5 @@
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:minHeight="56dp"
-    android:background="@color/material_blue_grey_800">
+    android:background="@color/primary">
 </android.support.v7.widget.Toolbar>
