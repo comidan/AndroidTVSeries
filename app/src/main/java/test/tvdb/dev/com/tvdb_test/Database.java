@@ -22,7 +22,7 @@ import java.util.List;
 public class Database  extends SQLiteOpenHelper{
 
     public static final String DATABASE_NAME = "TVSeries.db";
-    public static final int DATABASE_VERSON = 1;
+    public static final int DATABASE_VERSON = 2;
 
     private static final String SERIES_TABLE = "SERIES";
     private static final String SQL_CREATE_SERIES = "CREATE TABLE " + SERIES_TABLE + " ( ID_SERIES TEXT NOT NULL UNIQUE, TITLE TEXT NOT NULL, "
@@ -225,6 +225,7 @@ public class Database  extends SQLiteOpenHelper{
             for (int i = 0; i < series.size(); i++) {
                 MyTVSeries tmp = series.get(i);
                 MyTVSeries tmp2 = stored.get(stored.indexOf(tmp));
+                System.out.println("Updated : "+tmp.getLastSeason().getTotEpisodes()+" !Updated : "+tmp2.getLastSeason().getTotEpisodes());
                 //Se l' ultima stagione presente coincide con quella aggiornata
                 if (tmp.getLastSeasonNumber() == tmp2.getLastSeasonNumber()) {
                     //Se gli episodi dell' ultima stagione non coincidono con gli episodi aggiornati vengono salvati
@@ -267,8 +268,27 @@ public class Database  extends SQLiteOpenHelper{
 
     }
 
-    //TODO
-    public boolean deleteSerie(MyTVSeries serie){
+    public boolean deleteSerie(String id){
+        ArrayList<String> seasonsID = new ArrayList<String>();
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            String sql = "SELECT ID_SEASONS FROM " + SEASONS_TABLE + " WHERE id_series=" + id;
+            Cursor cursor = db.rawQuery(sql, null);
+            while (cursor.moveToNext()){
+                seasonsID.add(cursor.getString(cursor.getColumnIndex("ID_SEASONS")));
+            }
+            for(int i=0; i<seasonsID.size(); i++){
+                if(db.delete(EPISODES_TABLE, "id_season=?",new String[] {seasonsID.get(i)}) == 0)
+                    return false;
+            }
+            db.delete(ACTORS_TABLE, "id_series=?",new String[] {id});
+            db.delete(SEASONS_TABLE,"id_series=?",new String[] {id});
+            db.delete(SERIES_TABLE, "ID_SERIES=?",new String[] {id});
+            db.close();
+        } catch (SQLiteException ex){
+            ex.printStackTrace();
+            return false;
+        }
         return true;
     }
 }

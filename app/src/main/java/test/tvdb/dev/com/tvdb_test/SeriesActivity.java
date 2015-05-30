@@ -1,7 +1,11 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -88,13 +92,61 @@ public class SeriesActivity extends ActionBarActivity
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_delete:
+                showDeleteDialog();
+                return true;
+            default: return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
+        if(!extras.getBoolean("IS_SEARCHED"))
+            getMenuInflater().inflate(R.menu.menu_series_activity, menu);
         return true;
+    }
+
+    public void showDeleteDialog(){
+        AlertDialog.Builder ad = new Builder(this);
+        ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteTVSeries();
+            }
+        });
+        ad.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        ad.setTitle("Delete TVSeries");
+        ad.setMessage("Are you sure you want to delete this TVSeries?");
+        AlertDialog dlg = ad.create();
+        dlg.show();
+    }
+
+    public void deleteTVSeries(){
+        final Toast t = Toast.makeText(this, "Unable to delete the TVSeries", Toast.LENGTH_SHORT);
+        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>(){
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                if(db.deleteSerie(extras.getString("ID")))
+                    return true;
+                else return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if(result){
+                    //TODO RETURN TO THE GRID
+                }
+                else
+                    t.show();
+            }
+        };
+        task.execute();
     }
 
     private void write(final ArrayList<MyTVSeries> tvSeries)
