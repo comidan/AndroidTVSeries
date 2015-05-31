@@ -6,11 +6,13 @@ import android.app.AlertDialog.Builder;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
@@ -41,6 +43,7 @@ public class SeriesActivity extends ActionBarActivity
     private Toolbar toolbar;
     private Database db;
     private ArrayList<MyTVSeries> series;
+    private static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +115,7 @@ public class SeriesActivity extends ActionBarActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 deleteTVSeries();
+                handler.sendEmptyMessage(0);
             }
         });
         ad.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -302,10 +306,11 @@ public class SeriesActivity extends ActionBarActivity
         }
     }
 
-    public static void launchAndAnimate(Activity activity,View transitionView,Intent intent)
+    public static void launchAndAnimate(Activity activity,View transitionView,Intent intent,Handler _handler)
     {
+        handler=_handler;
         ActivityOptionsCompat options=ActivityOptionsCompat.makeSceneTransitionAnimation(activity,transitionView,"SeriesActivity:image");
-        ActivityCompat.startActivity(activity,intent,options.toBundle());
+        ActivityCompat.startActivity(activity, intent, options.toBundle());
     }
 
     private class DecodeByteArray extends AsyncTask<byte[],Void,Void>

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +24,9 @@ public class GridViewAdapter extends ArrayAdapter {
     private int layoutResourceId;
     private ArrayList<MyTVSeries> data,backup;
     private boolean isCalledFromSearch;
-    private Handler handler;
+    private Handler handler,_handler;
 
-    public GridViewAdapter(Context context,int layoutResourceId,ArrayList<MyTVSeries> data,Handler handler)
+    public GridViewAdapter(Context context,int layoutResourceId,ArrayList<MyTVSeries> data,Handler handler,Handler _handler)
     {
         super(context, layoutResourceId, data);
         isCalledFromSearch=false;
@@ -33,6 +34,7 @@ public class GridViewAdapter extends ArrayAdapter {
         this.context = context;
         this.data = data;
         this.handler=handler;
+        this._handler=_handler;
     }
 
     public GridViewAdapter(Context context,int layoutResourceId,List<Series> series,List<Episode>[] episodes,Bitmap[] posters,
@@ -110,7 +112,7 @@ public class GridViewAdapter extends ArrayAdapter {
                 intent.putExtra("DESCRIPTION",data.get(position).getDescription());
                 intent.putExtra("ID",data.get(position).getID());
                 intent.putExtra("EPISODES",data.get(position).getSeasons());
-                intent.putStringArrayListExtra("ACTORS",data.get(position).getActors());
+                intent.putStringArrayListExtra("ACTORS", data.get(position).getActors());
                 intent.putExtra("IS_SEARCHED",isCalledFromSearch);
                 if(isCalledFromSearch)
                 {
@@ -123,7 +125,7 @@ public class GridViewAdapter extends ArrayAdapter {
                         }
                     intent.putExtra("ADD",exists);
                 }
-                SeriesActivity.launchAndAnimate((Activity)context,container.imageView,intent);
+                SeriesActivity.launchAndAnimate((Activity)context,container.imageView,intent,_handler);
             }
         });
         new DecodeByteArray().execute(container);

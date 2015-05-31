@@ -1,6 +1,7 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,7 +34,7 @@ public class MyTVSeriesListFragment extends Fragment
     private Database db;
     private ArrayList<MyTVSeries> series;
     private TheTVDBApi tvDB;
-    private Handler finishLoadingHandler;
+    private Handler finishLoadingHandler,deleteSeriesHandler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -47,6 +48,14 @@ public class MyTVSeriesListFragment extends Fragment
             public boolean handleMessage(Message message) {
                 if(series.size()>0)
                     new UpdateSeries().execute();
+                return false;
+            }
+        });
+        deleteSeriesHandler=new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message message) {
+                System.out.println("Updating after a delete...");
+                read();
                 return false;
             }
         });
@@ -65,7 +74,7 @@ public class MyTVSeriesListFragment extends Fragment
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            customGridAdapter=new GridViewAdapter(getActivity(), R.layout.grid_cell, series,finishLoadingHandler);
+            customGridAdapter=new GridViewAdapter(getActivity(), R.layout.grid_cell,series,finishLoadingHandler,deleteSeriesHandler);
             try {
                 gridView.setAdapter(customGridAdapter);
             } catch (NullPointerException exc) {
@@ -140,7 +149,7 @@ public class MyTVSeriesListFragment extends Fragment
         protected void onPostExecute(Void aVoid) {
             if(isUpdated) {
                 Toast.makeText(getActivity(),"Updating your TV Series...",Toast.LENGTH_SHORT).show();
-                customGridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_cell, series, null);
+                customGridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_cell, series, null, deleteSeriesHandler);
                 gridView.setAdapter(customGridAdapter);
             }
         }
