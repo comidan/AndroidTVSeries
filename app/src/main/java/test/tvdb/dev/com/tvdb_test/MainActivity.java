@@ -3,11 +3,15 @@ package test.tvdb.dev.com.tvdb_test;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -27,8 +31,28 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         toolbar=(Toolbar)findViewById(R.id.toolbar);
-        if (toolbar!=null)
+        if (toolbar!=null) {
             setSupportActionBar(toolbar);
+            DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
+                    this,  mDrawerLayout, toolbar,
+                    R.string.navigation_drawer_open, R.string.navigation_drawer_close
+            ){
+                public void onDrawerClosed(View view) {
+                    super.onDrawerClosed(view);
+                    invalidateOptionsMenu();
+                }
+
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                    invalidateOptionsMenu();
+                }
+            };
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            mDrawerToggle.syncState();
+        }
         menuTitles=getResources().getStringArray(R.array.menu_titles);
         drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList=(ListView) findViewById(R.id.left_drawer);
@@ -60,9 +84,9 @@ public class MainActivity extends ActionBarActivity
             Fragment fragment;
             switch(position)
             {
-                case 0:fragment=new SearchFragment(); break;
-                case 1:fragment=new MyTVSeriesListFragment(); break;
-                default:fragment=new MyTVSeriesListFragment();
+                case 0: addSeries.setVisibility(View.INVISIBLE); fragment=new SearchFragment(); break;
+                case 1: addSeries.setVisibility(View.VISIBLE); fragment=new MyTVSeriesListFragment(); break;
+                default:addSeries.setVisibility(View.VISIBLE); fragment=new MyTVSeriesListFragment();
             }
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();

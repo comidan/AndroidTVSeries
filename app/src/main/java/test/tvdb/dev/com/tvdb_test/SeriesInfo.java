@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,6 +28,8 @@ import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.echo.holographlibrary.PieGraph;
+import com.echo.holographlibrary.PieSlice;
 import com.melnykov.fab.FloatingActionButton;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
@@ -46,7 +49,7 @@ public class SeriesInfo extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.test);
+        setContentView(R.layout.tabs);
         toolbar=(Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         String title=getIntent().getExtras().getString("TITLE");
@@ -173,7 +176,7 @@ public class SeriesInfo extends ActionBarActivity
                     episodesList.setAdapter(adapter);
                     return rootView;
                 case 1:
-                    rootView = inflater.inflate(R.layout.test_rating, container, false);
+                    rootView = inflater.inflate(R.layout.fragment_rating, container, false);
                     new GetRating().execute();
                     return rootView;
                 case 2:
@@ -259,7 +262,17 @@ public class SeriesInfo extends ActionBarActivity
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                ((TextView)rootView.findViewById(R.id.textView)).setText(rating);
+                PieGraph pg = (PieGraph)getActivity().findViewById(R.id.graph);
+                PieSlice slice=new PieSlice();
+                slice.setColor(Color.WHITE);
+                float tmp_rating;
+                slice.setValue(tmp_rating=Float.parseFloat(rating));
+                pg.addSlice(slice);
+                PieSlice _slice=new PieSlice();
+                _slice.setColor(Color.parseColor("#00FFFFFF"));
+                _slice.setValue(11-tmp_rating);
+                pg.addSlice(_slice);
+                ((TextView) rootView.findViewById(R.id.textView)).setText(rating+"/10");
             }
         }
 

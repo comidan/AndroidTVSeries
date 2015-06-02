@@ -6,13 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
-
 import com.omertron.thetvdbapi.model.Episode;
-
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +59,6 @@ public class Database  extends SQLiteOpenHelper{
     }
 
     public boolean storeSeries(ArrayList<MyTVSeries> series){
-        Log.v("Emil", "MyTVSeries arraylist size: " + series.size());
         try {
             SQLiteDatabase db = getWritableDatabase();
             db.delete(SERIES_TABLE, null, null);
@@ -121,7 +114,6 @@ public class Database  extends SQLiteOpenHelper{
     //TODO
     public ArrayList<MyTVSeries> getSeries(){
         ArrayList<MyTVSeries> series = new ArrayList<MyTVSeries>();
-        Log.v("Emil","Reading TVseries from database");
         final String SELECT_SERIES = "SELECT ID_SERIES, TITLE, DESCRIPTION, RELEASE_DATE, LANGUAGE, POSTER"
                 + " FROM "+SERIES_TABLE+" ORDER BY TITLE";
         try{
@@ -176,7 +168,6 @@ public class Database  extends SQLiteOpenHelper{
                 series.add(new MyTVSeries(title, description, episodesTitle, id, release_date, poster, seasons, actors));
             }
             db.close();
-            Log.v("Emil", "MyTVSeries arraylist size: " + series.size());
             return series;
         } catch (SQLiteException e){
             e.printStackTrace();

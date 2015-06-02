@@ -25,6 +25,12 @@ android {
         exclude 'META-INF/LICENSE.txt'
     }
 
+    repositories {
+        maven {
+            url "https://jitpack.io"
+        }
+    }
+
 }
 
 dependencies {
@@ -33,4 +39,5 @@ dependencies {
     compile 'com.melnykov:floatingactionbutton:1.3.0'
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.github.Androguide:HoloGraphLibrary:1ba2f1c33e'
 }
