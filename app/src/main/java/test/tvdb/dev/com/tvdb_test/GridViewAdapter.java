@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -104,16 +105,16 @@ public class GridViewAdapter extends ArrayAdapter {
         container.data=item.getPoster();
         container.imageView=holder.image;
         holder.image.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(context,SeriesActivity.class);
-                intent.putExtra("BITMAP",container.data);
                 intent.putExtra("TITLE",data.get(position).getTitle());
                 intent.putExtra("DESCRIPTION",data.get(position).getDescription());
                 intent.putExtra("ID",data.get(position).getID());
-                intent.putExtra("EPISODES",data.get(position).getSeasons());
+                intent.putExtra("EPISODES", data.get(position).getSeasons());
                 intent.putStringArrayListExtra("ACTORS", data.get(position).getActors());
-                intent.putExtra("IS_SEARCHED",isCalledFromSearch);
+                intent.putExtra("IS_SEARCHED", isCalledFromSearch);
                 if(isCalledFromSearch)
                 {
                     boolean exists=false;
@@ -125,7 +126,8 @@ public class GridViewAdapter extends ArrayAdapter {
                         }
                     intent.putExtra("ADD",exists);
                 }
-                SeriesActivity.launchAndAnimate((Activity)context,container.imageView,intent,_handler);
+                SeriesActivity.launchAndAnimate((Activity)context,container.imageView,intent,_handler,
+                                                ((BitmapDrawable)container.imageView.getDrawable()).getBitmap());
             }
         });
         new DecodeByteArray().execute(container);

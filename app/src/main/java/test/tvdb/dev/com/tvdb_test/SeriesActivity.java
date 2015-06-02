@@ -43,19 +43,24 @@ public class SeriesActivity extends ActionBarActivity
     private Toolbar toolbar;
     private Database db;
     private ArrayList<MyTVSeries> series;
+    private static Bitmap bitmap;
     private static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_series);
+        extras=getIntent().getExtras();
+        image=(ImageView)findViewById(R.id.poster);
+        ViewCompat.setTransitionName(image,"SeriesActivity:image");
+        image.setImageBitmap(bitmap);
+        description=(TextView)findViewById(R.id.description);
+        description.setText(extras.getString("DESCRIPTION"));
         toolbar=(Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        extras=getIntent().getExtras();
         final String title=extras.getString("TITLE");
         getSupportActionBar().setTitle(title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        image=(ImageView)findViewById(R.id.poster);
         boolean add=extras.getBoolean("ADD");
         if(!add&&extras.getBoolean("IS_SEARCHED"))
         {
@@ -69,9 +74,6 @@ public class SeriesActivity extends ActionBarActivity
                 }
             });
         }
-        ViewCompat.setTransitionName(image,"SeriesActivity:image");
-        byte[] bitmap=(byte[])extras.getSerializable("BITMAP");
-        new DecodeByteArray().execute(bitmap);
         Button button=(Button)findViewById(R.id.more);
         if(extras.getBoolean("IS_SEARCHED"))
             button.setVisibility(View.GONE);
@@ -84,7 +86,6 @@ public class SeriesActivity extends ActionBarActivity
                     startActivity(intent);                                           //wait for the actor implementation in the DB
                 }
             });
-        description=(TextView)findViewById(R.id.description);
         db = new Database(this);
         series = new ArrayList<>();
     }
@@ -176,21 +177,6 @@ public class SeriesActivity extends ActionBarActivity
 
     private ArrayList<MyTVSeries> read()
     {
-        /*AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                if((series = db.getSeries()) != null)
-                    return true;
-                return false;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if(!result)
-                    Toast.makeText(SeriesActivity.this,"Could not read from database", Toast.LENGTH_SHORT).show();
-            }
-        };
-        task.execute();*/
         return db.getSeries();
 
     }
@@ -306,28 +292,11 @@ public class SeriesActivity extends ActionBarActivity
         }
     }
 
-    public static void launchAndAnimate(Activity activity,View transitionView,Intent intent,Handler _handler)
+    public static void launchAndAnimate(Activity activity,View transitionView,Intent intent,Handler _handler,Bitmap _bitmap)
     {
         handler=_handler;
+        bitmap=_bitmap;
         ActivityOptionsCompat options=ActivityOptionsCompat.makeSceneTransitionAnimation(activity,transitionView,"SeriesActivity:image");
         ActivityCompat.startActivity(activity, intent, options.toBundle());
-    }
-
-    private class DecodeByteArray extends AsyncTask<byte[],Void,Void>
-    {
-        private Bitmap bitmap;
-
-        @Override
-        protected Void doInBackground(byte[][] params)
-        {
-            bitmap=BitmapFactory.decodeByteArray(params[0],0,params[0].length);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            image.setImageBitmap(bitmap);
-            description.setText(extras.getString("DESCRIPTION"));
-        }
     }
 }

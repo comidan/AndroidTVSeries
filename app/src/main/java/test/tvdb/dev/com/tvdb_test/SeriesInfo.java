@@ -263,6 +263,7 @@ public class SeriesInfo extends ActionBarActivity
             @Override
             protected void onPostExecute(Void aVoid) {
                 PieGraph pg = (PieGraph)getActivity().findViewById(R.id.graph);
+                pg.setThickness(20);
                 PieSlice slice=new PieSlice();
                 slice.setColor(Color.WHITE);
                 float tmp_rating;
