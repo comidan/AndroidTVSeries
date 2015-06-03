@@ -2,6 +2,7 @@
 <resources>
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="android:activatedBackgroundIndicator">@drawable/drawer_list_selector</item>
     </style>
 
     <style name="AppTheme.Base" parent="Theme.AppCompat">
