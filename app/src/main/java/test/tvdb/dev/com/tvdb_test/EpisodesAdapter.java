@@ -40,10 +40,9 @@ public class EpisodesAdapter extends BaseExpandableListAdapter
         this.updatedWatches=updatedWatches;
         if(this.updatedWatches==null)
             this.updatedWatches=new ArrayList<>();
+        this.fullValues=fullValues;
         this.watches=watches;
         this.IDs=IDs;
-        this.fullValues=fullValues;
-
     }
 
     @Override
@@ -123,7 +122,6 @@ public class EpisodesAdapter extends BaseExpandableListAdapter
         }
         int tmp=fullValues.get(groupPosition).getSeasonNumber();
         holder.textLabel.setText(tmp>0 ? "  Season "+tmp : "  Special episodes");
-
         return resultView;
     }
 

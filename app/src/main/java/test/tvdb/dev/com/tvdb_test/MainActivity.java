@@ -37,11 +37,13 @@ public class MainActivity extends ActionBarActivity
             ){
                 public void onDrawerClosed(View view) {
                     super.onDrawerClosed(view);
+                    addSeries.setVisibility(View.VISIBLE);
                     invalidateOptionsMenu();
                 }
 
                 public void onDrawerOpened(View drawerView) {
                     super.onDrawerOpened(drawerView);
+                    addSeries.setVisibility(View.INVISIBLE);
                     invalidateOptionsMenu();
                 }
             };

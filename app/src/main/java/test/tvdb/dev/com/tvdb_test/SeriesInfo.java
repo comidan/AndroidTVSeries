@@ -133,6 +133,11 @@ public class SeriesInfo extends ActionBarActivity
                     final ArrayList<String> updatedWatches=new ArrayList<>();
                     episodesList = (ExpandableListView) rootView.findViewById(R.id.listView);
                     final ArrayList<Season> tmpSeasons =(ArrayList<Season>)extras.getSerializable("EPISODES");
+                    if(tmpSeasons.get(0).getSeasonNumber()==0)
+                    {
+                        Season tmp=tmpSeasons.remove(0);
+                        tmpSeasons.add(tmp);
+                    }
                     ArrayList<String> tmp=new ArrayList<>();
                     ArrayList<ArrayList<String>> tmpIDs=new ArrayList<>();
                     Database db=new Database(getActivity());
@@ -236,7 +241,7 @@ public class SeriesInfo extends ActionBarActivity
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                toolbar.setSubtitle(outputDate);
+                    toolbar.setSubtitle(outputDate);
             }
         }
 
