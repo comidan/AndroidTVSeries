@@ -26,10 +26,9 @@ import java.util.List;
 import retrofit.RetrofitError;
 
 /**
- * Created by daniele on 07/06/2015.
+ * Created by Emil on 07/06/2015.
  */
-public class TrendsFragment extends Fragment
-{
+public class PopularsFragment extends Fragment{
     private View rootView;
     private TheTVDBApi tvDB;
     private ProgressBar bar;
@@ -37,7 +36,7 @@ public class TrendsFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView=inflater.inflate(R.layout.trends_fragment,container,false);
+        rootView=inflater.inflate(R.layout.populars_fragment,container,false);
         bar=(ProgressBar)rootView.findViewById(R.id.progressBar);
         new LoginTVDB().execute();
         return rootView;
@@ -57,14 +56,11 @@ public class TrendsFragment extends Fragment
             series=new ArrayList<>();
             try
             {
-                //List<Show> shows=trakt.recommendations().shows(Extended.FULL);
-                //List<Show> shows=trakt.shows().popular(1,12,Extended.FULL);
-                List<TrendingShow> shows=trakt.shows().trending(1,12,Extended.FULL);
+                List<Show> shows=trakt.shows().popular(1,12,Extended.FULL);
                 poster=new Bitmap[shows.size()];
                 for(int i=0;i<shows.size();i++)
                 {
-                    //String tmpID=shows.get(i).ids.tvdb+"";
-                    String tmpID=shows.get(i).show.ids.tvdb+"";
+                    String tmpID=shows.get(i).ids.tvdb+"";
                     series.add(tvDB.getSeries(tmpID, "en"));
                     try
                     {

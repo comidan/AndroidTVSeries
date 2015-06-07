@@ -86,6 +86,7 @@ public class MainActivity extends ActionBarActivity
                 case 0: addSeries.setVisibility(View.INVISIBLE); fragment=new SearchFragment(); break;
                 case 1: addSeries.setVisibility(View.VISIBLE); fragment=new MyTVSeriesListFragment(); break;
                 case 2: addSeries.setVisibility(View.INVISIBLE); fragment=new TrendsFragment(); break;
+                case 3: addSeries.setVisibility(View.INVISIBLE); fragment=new PopularsFragment(); break;
                 default:addSeries.setVisibility(View.VISIBLE); fragment=new MyTVSeriesListFragment();
             }
             FragmentManager fragmentManager = getFragmentManager();
