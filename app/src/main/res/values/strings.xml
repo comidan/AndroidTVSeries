@@ -6,6 +6,7 @@
     <array name="menu_titles">
         <item>Search TV Series</item>
         <item>My TV Series</item>
+        <item>Trending TV Series</item>
     </array>
     <string-array name="tabs">
         <item>Episodes</item>
