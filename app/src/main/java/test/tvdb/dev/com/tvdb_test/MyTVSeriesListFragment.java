@@ -1,6 +1,7 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -117,37 +118,43 @@ public class MyTVSeriesListFragment extends Fragment
     private class UpdateSeries extends AsyncTask<Void,Void,Void>
     {
         boolean isUpdated=false;
+        private Activity context;
+
+        @Override
+        protected void onPreExecute() {
+            context=getActivity();
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
             if(tvDB==null)
                 tvDB=new TheTVDBApi("2C8BD989F33B0C84");
-            try {
-                SharedPreferences preferences = getActivity().getPreferences(Activity.MODE_PRIVATE);
-                String timeTmp;
-                if (!(timeTmp = tvDB.getWeeklyUpdates().getTime()).equals(preferences.getString("TIME", new Date().toString()))) {
-                    isUpdated=true;
-                    preferences.edit().putString("TIME", timeTmp).apply();
-                    List<SeriesUpdate> updateList = tvDB.getWeeklyUpdates().getSeriesUpdates();
-                    for (int i=0;i<updateList.size();i++)
-                        for(int j=0;j<series.size();j++)
-                            if(series.get(j).getID().equals(updateList.get(i).getId())) {
-                                List<Episode> fullEpisodeUpdate=tvDB.getAllEpisodes(updateList.get(i).getId(),"en");
-                                series.get(j).setEpisodes(fullEpisodeUpdate);
-                            }
-                    new Database(getActivity()).updateSeries(series);
+            if(context!=null) {
+                try {
+                    SharedPreferences preferences = context.getPreferences(Activity.MODE_PRIVATE);
+                    String timeTmp;
+                    if (!(timeTmp = tvDB.getWeeklyUpdates().getTime()).equals(preferences.getString("TIME", new Date().toString()))) {
+                        isUpdated = true;
+                        preferences.edit().putString("TIME", timeTmp).apply();
+                        List<SeriesUpdate> updateList = tvDB.getWeeklyUpdates().getSeriesUpdates();
+                        for (int i = 0; i < updateList.size(); i++)
+                            for (int j = 0; j < series.size(); j++)
+                                if (series.get(j).getID().equals(updateList.get(i).getId())) {
+                                    List<Episode> fullEpisodeUpdate = tvDB.getAllEpisodes(updateList.get(i).getId(), "en");
+                                    series.get(j).setEpisodes(fullEpisodeUpdate);
+                                }
+                        new Database(context).updateSeries(series);
+                    }
+                } catch (Exception exc) {
+                    exc.printStackTrace();
                 }
-            }
-            catch(Exception exc)
-            {
-                exc.printStackTrace();
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if(isUpdated) {
+            if(isUpdated&&context!=null) {
                 Toast.makeText(getActivity(),"Updating your TV Series...",Toast.LENGTH_SHORT).show();
                 customGridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_cell, series, null, deleteSeriesHandler);
                 gridView.setAdapter(customGridAdapter);
