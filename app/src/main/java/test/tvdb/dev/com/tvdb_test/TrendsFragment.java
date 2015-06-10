@@ -14,10 +14,8 @@ import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Series;
 import com.uwetrottmann.trakt.v2.TraktV2;
-import com.uwetrottmann.trakt.v2.entities.Show;
 import com.uwetrottmann.trakt.v2.entities.TrendingShow;
 import com.uwetrottmann.trakt.v2.enums.Extended;
-import com.uwetrottmann.trakt.v2.exceptions.OAuthUnauthorizedException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -57,8 +55,6 @@ public class TrendsFragment extends Fragment
             series=new ArrayList<>();
             try
             {
-                //List<Show> shows=trakt.recommendations().shows(Extended.FULL);
-                //List<Show> shows=trakt.shows().popular(1,12,Extended.FULL);
                 List<TrendingShow> shows=trakt.shows().trending(1,12,Extended.FULL);
                 poster=new Bitmap[shows.size()];
                 for(int i=0;i<shows.size();i++)

@@ -2,6 +2,7 @@ package test.tvdb.dev.com.tvdb_test;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -10,6 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.echo.holographlibrary.PieGraph;
+import com.echo.holographlibrary.PieSlice;
 import com.omertron.thetvdbapi.model.Episode;
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,6 +96,18 @@ public class EpisodeActivity extends ActionBarActivity
             ((TextView)findViewById(R.id.description_episode)).setText(episode.getOverview());
             ((TextView)findViewById(R.id.episode_date)).setText(outputDate);
             ((TextView)findViewById(R.id.episode_rating)).setText("Rated "+episode.getRating());
+            PieGraph pg = (PieGraph)findViewById(R.id.graph);
+            pg.setThickness(20);
+            PieSlice slice=new PieSlice();
+            slice.setColor(Color.WHITE);
+            float tmp_rating;
+            slice.setValue(tmp_rating=Float.parseFloat(episode.getRating()));
+            pg.addSlice(slice);
+            PieSlice _slice=new PieSlice();
+            _slice.setColor(Color.parseColor("#00FFFFFF"));
+            _slice.setValue(11-tmp_rating);
+            pg.addSlice(_slice);
+            ((TextView)findViewById(R.id.textView)).setText(episode.getRating()+"/10");
         }
     }
 }

@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +36,9 @@ import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Episode;
 import com.omertron.thetvdbapi.model.Series;
+import com.uwetrottmann.trakt.v2.TraktV2;
+import com.uwetrottmann.trakt.v2.enums.Extended;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -210,15 +214,22 @@ public class SeriesInfo extends ActionBarActivity
                     if(!params[0].full) {
                         if (params[0].season == 0)
                             params[0].season += params[0].seasonOffset;
-                        try
+                        String date;
+                        do
                         {
-                            episode = tvDB.getEpisode(params[0].id, params[0].season, params[0].index, "en");
-                        }
-                        catch(TvDbException exc)
-                        {
-                            episode = tvDB.getEpisode(params[0].id, params[0].season+1, params[0].index, "en");
-                        }
-                        String date = episode.getFirstAired();
+                            tvDB=new TheTVDBApi("2C8BD989F33B0C84");
+                            try
+                            {
+                                episode = tvDB.getEpisode(params[0].id, params[0].season, params[0].index, "en");
+                            }
+                            catch(TvDbException exc)
+                            {
+                                episode = tvDB.getEpisode(params[0].id, params[0].season+1, params[0].index, "en");
+                            }
+                            date=episode.getFirstAired();
+                            if(date.equals(""))
+                                params[0].index++;
+                        }while(date.equals(""));
                         String[] splitDate = date.split("-");
                         Date currentDate = new Date();
                         Calendar episodeDate = Calendar.getInstance();
