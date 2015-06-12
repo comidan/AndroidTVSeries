@@ -35,11 +35,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.75"/>
-                <TextView
-                    android:id="@+id/episode_rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"/>
             </LinearLayout>
             <TextView
                 android:id="@+id/description_episode"

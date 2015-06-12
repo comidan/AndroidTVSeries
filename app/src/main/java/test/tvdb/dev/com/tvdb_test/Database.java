@@ -58,7 +58,7 @@ public class Database  extends SQLiteOpenHelper{
         return true;
     }
 
-    public boolean storeSeries(ArrayList<MyTVSeries> series){
+    public boolean storeSeries(ArrayList<MyTVSeries> series) throws ArrayIndexOutOfBoundsException{
         try {
             SQLiteDatabase db = getWritableDatabase();
             db.delete(SERIES_TABLE, null, null);

@@ -156,16 +156,24 @@ public class SeriesActivity extends ActionBarActivity
         AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
-                if(db.storeSeries(tvSeries))
-                    return true;
-                return false;
+                try
+                {
+                    return db.storeSeries(tvSeries);
+                }
+                catch(ArrayIndexOutOfBoundsException exc)
+                {
+                    return false;
+                }
             }
 
             @Override
             protected void onPostExecute(Boolean result) {
                 if(result)
                     Toast.makeText(SeriesActivity.this,"Added successfully", Toast.LENGTH_SHORT).show();
-                else Toast.makeText(SeriesActivity.this,"Problem while adding", Toast.LENGTH_SHORT).show();
+                else {
+                    Toast.makeText(SeriesActivity.this, "Problem while adding, retrying...", Toast.LENGTH_SHORT).show();
+                    new DownloadEpisodes().execute();
+                }
             }
         };
         task.execute();
@@ -250,14 +258,12 @@ public class SeriesActivity extends ActionBarActivity
         @Override
         protected void onPostExecute(Void aVoid) {
             series=read();
-            //read();
             Bitmap bitmap=((BitmapDrawable)image.getDrawable()).getBitmap();
             if(series==null)
                 series=new ArrayList<MyTVSeries>();
             ArrayList<String> _episodes=new ArrayList();
             for(int i=0;i<episodeList.size();i++)
                 _episodes.add(episodeList.get(i).getEpisodeName());
-            //if(extras.getStringArrayList("ACTORS").size()==0)
             extras.putSerializable("ACTORS",actors);
             MyTVSeries tmp=new MyTVSeries(extras.getString("TITLE"),description.getText().toString(),bitmap,_episodes,extras.getString("ID"),
                                           serieFirstAired, extras.getStringArrayList("ACTORS"), episodeList);
