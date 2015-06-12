@@ -210,11 +210,11 @@ public class SeriesActivity extends ActionBarActivity
                     finish();
                 }
             }
-           for(int i=0;i<episodeList.size();i++)
+            for(int i=0;i<episodeList.size();i++)
                 if(episodeList.get(i).getEpisodeName().equals(title))
                 {
-                     episode=episodeList.get(i);
-                     break;
+                    episode=episodeList.get(i);
+                    break;
                 }
             return null;
         }
@@ -266,7 +266,7 @@ public class SeriesActivity extends ActionBarActivity
                 _episodes.add(episodeList.get(i).getEpisodeName());
             extras.putSerializable("ACTORS",actors);
             MyTVSeries tmp=new MyTVSeries(extras.getString("TITLE"),description.getText().toString(),bitmap,_episodes,extras.getString("ID"),
-                                          serieFirstAired, extras.getStringArrayList("ACTORS"), episodeList);
+                    serieFirstAired, extras.getStringArrayList("ACTORS"), episodeList);
             extras.putSerializable("EPISODES",tmp.getSeasons());
             series.add(tmp);
             write(series);

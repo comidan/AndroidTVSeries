@@ -95,6 +95,7 @@ public class EpisodeActivity extends ActionBarActivity
             ((ImageView)findViewById(R.id.poster_episode)).setImageBitmap(bitmap);
             ((TextView)findViewById(R.id.description_episode)).setText(episode.getOverview());
             ((TextView)findViewById(R.id.episode_date)).setText(outputDate);
+            //((TextView)findViewById(R.id.episode_rating)).setText("Rated "+episode.getRating());
             PieGraph pg = (PieGraph)findViewById(R.id.graph);
             pg.setThickness(20);
             PieSlice slice=new PieSlice();
