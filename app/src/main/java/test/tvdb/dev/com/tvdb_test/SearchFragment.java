@@ -134,21 +134,18 @@ public class SearchFragment extends Fragment {
                     }
                     catch(IndexOutOfBoundsException exc)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                         backup.remove(j);
                         j--;
                     }
                     catch (MalformedURLException ex)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                         backup.remove(j);
                         j--;
                     }
                     catch (IOException ex)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                         backup.remove(j);
                         j--;

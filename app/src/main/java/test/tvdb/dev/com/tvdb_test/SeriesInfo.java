@@ -104,7 +104,7 @@ public class SeriesInfo extends ActionBarActivity
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
     }
 
@@ -195,6 +195,73 @@ public class SeriesInfo extends ActionBarActivity
                     ArrayAdapter<String> _adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,
                                                                            Arrays.copyOf(_tmp.toArray(), _tmp.size(), String[].class));
                     actorList.setAdapter(_adapter);
+                    return rootView;
+                case 3:
+                    rootView = inflater.inflate(R.layout.fragment_stats, container, false);
+                    final ArrayList<Season> _tmpSeasons =(ArrayList<Season>)extras.getSerializable("EPISODES");
+                    if(_tmpSeasons.get(0).getSeasonNumber()==0)
+                    {
+                        Season tmp1=_tmpSeasons.remove(0);
+                        _tmpSeasons.add(tmp1);
+                    }
+                    ArrayList<String> tmp1=new ArrayList<>();
+                    ArrayList<ArrayList<String>> _tmpIDs=new ArrayList<>();
+                    Database _db=new Database(getActivity());
+                    SQLiteDatabase _sqlDb=_db.getReadableDatabase();
+                    final ArrayList<ArrayList<Boolean>> _watches=new ArrayList<>();
+                    for(int j=0;j<_tmpSeasons.size();j++) {
+                        _watches.add(new ArrayList<Boolean>());
+                        for (int i = 1; i <= _tmpSeasons.get(j).getTotEpisodes(); i++) {
+                            Cursor cursor = _sqlDb.rawQuery("SELECT SEEN FROM EPISODES WHERE ID_EPISODES=" + _tmpSeasons.get(j).getEpisode(i).getId(), null);
+                            while (cursor.moveToNext())
+                                _watches.get(j).add(cursor.getInt(cursor.getColumnIndex("SEEN")) == 0 ? false : true);
+                        }
+                    }
+                    int countAsSeenSeasons=0,countAsSeenEpisodes=0,totalEpisodes=0;
+                    for(int i=0;i<_watches.size();i++) {
+                        boolean seen=false;
+                        for (int j = 0; j < _watches.get(i).size(); j++)
+                            if (!_watches.get(i).get(j))
+                                break;
+                            else if(j==_watches.get(i).size()-1&&_watches.get(i).get(j))
+                                seen=true;
+                        if(seen)
+                        {
+                            countAsSeenSeasons++;
+                            seen=false;
+                        }
+                    }
+                    for(int i=0;i<_watches.size();i++)
+                        for(int j=0;j<_watches.get(i).size();j++) {
+                            totalEpisodes++;
+                            if (_watches.get(i).get(j))
+                                countAsSeenEpisodes++;
+                        }
+                    ((TextView)rootView.findViewById(R.id.episodes)).setText("Episodes seen :");
+                    PieGraph pg = (PieGraph)rootView.findViewById(R.id.graph_episodes);
+                    pg.setThickness(20);
+                    PieSlice slice=new PieSlice();
+                    slice.setColor(Color.parseColor("#4CAF50"));
+                    slice.setValue(countAsSeenEpisodes);
+                    pg.addSlice(slice);
+                    PieSlice _slice=new PieSlice();
+                    _slice.setColor(Color.parseColor("#858585"));
+                    _slice.setValue(totalEpisodes - countAsSeenEpisodes);
+                    pg.addSlice(_slice);
+                    ((TextView)rootView.findViewById(R.id.textView_episode)).setText(countAsSeenEpisodes + "/" + totalEpisodes);
+                    ((TextView)rootView.findViewById(R.id.seasons)).setText("Seasons seen :");
+                    PieGraph pgS = (PieGraph)rootView.findViewById(R.id.graph_season);
+                    pgS.setThickness(20);
+                    PieSlice sliceS=new PieSlice();
+                    sliceS.setColor(Color.parseColor("#4CAF50"));
+                    sliceS.setValue(countAsSeenSeasons);
+                    pgS.addSlice(sliceS);
+                    PieSlice _sliceS=new PieSlice();
+                    _sliceS.setColor(Color.parseColor("#858585"));
+                    _sliceS.setValue(_watches.size()-countAsSeenSeasons);
+                    pgS.addSlice(_sliceS);
+                    ((TextView)rootView.findViewById(R.id.textView_season)).setText(countAsSeenSeasons + "/" + _watches.size());
+                    return rootView;
 
                 default : return rootView;
             }
@@ -278,15 +345,15 @@ public class SeriesInfo extends ActionBarActivity
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                PieGraph pg = (PieGraph)getActivity().findViewById(R.id.graph);
+                PieGraph pg = (PieGraph)rootView.findViewById(R.id.graph);
                 pg.setThickness(20);
                 PieSlice slice=new PieSlice();
-                slice.setColor(Color.WHITE);
+                slice.setColor(Color.parseColor("#4CAF50"));
                 float tmp_rating;
                 slice.setValue(tmp_rating=Float.parseFloat(rating));
                 pg.addSlice(slice);
                 PieSlice _slice=new PieSlice();
-                _slice.setColor(Color.parseColor("#00FFFFFF"));
+                _slice.setColor(Color.parseColor("#858585"));
                 _slice.setValue(11-tmp_rating);
                 pg.addSlice(_slice);
                 ((TextView) rootView.findViewById(R.id.textView)).setText(rating+"/10");

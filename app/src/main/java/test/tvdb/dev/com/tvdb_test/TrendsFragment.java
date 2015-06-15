@@ -59,7 +59,6 @@ public class TrendsFragment extends Fragment
                 poster=new Bitmap[shows.size()];
                 for(int i=0;i<shows.size();i++)
                 {
-                    //String tmpID=shows.get(i).ids.tvdb+"";
                     String tmpID=shows.get(i).show.ids.tvdb+"";
                     series.add(tvDB.getSeries(tmpID, "en"));
                     try
@@ -69,17 +68,14 @@ public class TrendsFragment extends Fragment
                     }
                     catch(IndexOutOfBoundsException exc)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                     }
                     catch (MalformedURLException ex)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                     }
                     catch (IOException ex)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                     }
                 }

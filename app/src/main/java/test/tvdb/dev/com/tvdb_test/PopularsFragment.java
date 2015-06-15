@@ -67,17 +67,14 @@ public class PopularsFragment extends Fragment{
                     }
                     catch(IndexOutOfBoundsException exc)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                     }
                     catch (MalformedURLException ex)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                     }
                     catch (IOException ex)
                     {
-                        System.out.println("No poster has been found");
                         poster[i]=null; //no poster has been found
                     }
                 }

@@ -13,5 +13,6 @@
         <item>Episodes</item>
         <item>Rating</item>
         <item>Actors</item>
+        <item>Stats</item>
     </string-array>
 </resources>
