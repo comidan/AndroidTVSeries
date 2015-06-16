@@ -1,28 +1,43 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <GridView
+            android:id="@+id/gridView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="5dp"
+            android:columnWidth="100dp"
+            android:gravity="center"
+            android:numColumns="auto_fit"
+            android:verticalSpacing="5dp"
+            android:drawSelectorOnTop="true"
+            android:stretchMode="columnWidth" >
+        </GridView>
 
-    <GridView
-        android:id="@+id/gridView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_margin="5dp"
-        android:columnWidth="100dp"
-        android:gravity="center"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="5dp"
-        android:drawSelectorOnTop="true"
-        android:stretchMode="columnWidth" >
-    </GridView>
+        <TextView
+            android:id="@+id/no_tv_series"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:text="No TV Series added!"
+            android:visibility="invisible"/>
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/no_tv_series"
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:textAppearance="@android:style/TextAppearance.Large"
-        android:text="No TV Series added!"
-        android:visibility="invisible"/>
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/fab_ic_add"
+        fab:fab_colorNormal="@color/primary"
+        fab:fab_colorPressed="@color/primary_dark"
+        fab:fab_colorRipple="@color/primary_dark" />
 
-</RelativeLayout>
+</FrameLayout>

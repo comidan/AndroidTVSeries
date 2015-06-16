@@ -3,6 +3,8 @@ package test.tvdb.dev.com.tvdb_test;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,7 +22,7 @@ public class MainActivity extends ActionBarActivity
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private Toolbar toolbar;
-    private ImageButton addSeries;
+    private Handler searchHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,28 +39,23 @@ public class MainActivity extends ActionBarActivity
             ){
                 public void onDrawerClosed(View view) {
                     super.onDrawerClosed(view);
-                    addSeries.setVisibility(View.VISIBLE);
                     invalidateOptionsMenu();
                 }
 
                 public void onDrawerOpened(View drawerView) {
                     super.onDrawerOpened(drawerView);
-                    addSeries.setVisibility(View.INVISIBLE);
                     invalidateOptionsMenu();
                 }
             };
             mDrawerLayout.setDrawerListener(mDrawerToggle);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayUseLogoEnabled(true);
             mDrawerToggle.syncState();
         }
-        menuTitles=getResources().getStringArray(R.array.menu_titles);
-        drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerList=(ListView) findViewById(R.id.left_drawer);
-        addSeries=(ImageButton)findViewById(R.id.add_series);
-        addSeries.setOnClickListener(new View.OnClickListener() {
+        searchHandler=new Handler(new Handler.Callback() {
             @Override
-            public void onClick(View v) {
+            public boolean handleMessage(Message message) {
                 Fragment fragment=new SearchFragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction()
@@ -66,8 +63,12 @@ public class MainActivity extends ActionBarActivity
                         .commit();
                 drawerList.setItemChecked(0,true);
                 getSupportActionBar().setTitle(menuTitles[0]);
+                return false;
             }
         });
+        menuTitles=getResources().getStringArray(R.array.menu_titles);
+        drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerList=(ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(new ArrayAdapter<String>(this,R.layout.drawer_list_item,menuTitles));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
         FragmentManager fragmentManager = getFragmentManager();
@@ -83,11 +84,11 @@ public class MainActivity extends ActionBarActivity
             Fragment fragment;
             switch(position)
             {
-                case 0: addSeries.setVisibility(View.INVISIBLE); fragment=new SearchFragment(); break;
-                case 1: addSeries.setVisibility(View.VISIBLE); fragment=new MyTVSeriesListFragment(); break;
-                case 2: addSeries.setVisibility(View.INVISIBLE); fragment=new TrendsFragment(); break;
-                case 3: addSeries.setVisibility(View.INVISIBLE); fragment=new PopularsFragment(); break;
-                default:addSeries.setVisibility(View.VISIBLE); fragment=new MyTVSeriesListFragment();
+                case 0: fragment=new SearchFragment(); break;
+                case 1: fragment=new MyTVSeriesListFragment(); ((MyTVSeriesListFragment)fragment).setHandler(searchHandler); break;
+                case 2: fragment=new TrendsFragment(); break;
+                case 3: fragment=new PopularsFragment(); break;
+                default: fragment=new MyTVSeriesListFragment(); ((MyTVSeriesListFragment)fragment).setHandler(searchHandler);
             }
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();

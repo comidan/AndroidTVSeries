@@ -1,6 +1,7 @@
 package test.tvdb.dev.com.tvdb_test;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.Toast;
+
+import com.melnykov.fab.FloatingActionButton;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.model.Episode;
 import com.omertron.thetvdbapi.model.SeriesUpdate;
@@ -36,6 +39,7 @@ public class MyTVSeriesListFragment extends Fragment
     private ArrayList<MyTVSeries> series;
     private TheTVDBApi tvDB;
     private Handler finishLoadingHandler,deleteSeriesHandler;
+    private static Handler handler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -64,6 +68,11 @@ public class MyTVSeriesListFragment extends Fragment
         return rootView;
     }
 
+    public void setHandler(Handler handler)
+    {
+        this.handler=handler;
+    }
+
     private class LoadImages extends AsyncTask<Void,Void,Void> {
         //ArrayList<MyTVSeries> series;
 
@@ -78,6 +87,14 @@ public class MyTVSeriesListFragment extends Fragment
             customGridAdapter=new GridViewAdapter(getActivity(), R.layout.grid_cell,series,finishLoadingHandler,deleteSeriesHandler);
             try {
                 gridView.setAdapter(customGridAdapter);
+                FloatingActionButton fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
+                fab.attachToListView(gridView);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        handler.sendEmptyMessage(0);
+                    }
+                });
             } catch (NullPointerException exc) {
                 Toast.makeText(getActivity(), "No TV Series added", Toast.LENGTH_SHORT).show();
             }

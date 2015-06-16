@@ -15,7 +15,7 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:src="@drawable/ic_tick"
-        fab:fab_colorNormal="#006699"
-        fab:fab_colorPressed="#006699"
-        fab:fab_colorRipple="#006699" />
+        fab:fab_colorNormal="@color/primary"
+        fab:fab_colorPressed="@color/primary_dark"
+        fab:fab_colorRipple="@color/primary_dark" />
 </FrameLayout>

@@ -1,28 +1,16 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical">
-        <!--android:layout_width="match_parent"
-        android:layout_height="match_parent"-->
-        tools:context=".MainActivity"
-        <!--android:orientation="vertical">-->
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <include android:id="@+id/toolbar" layout="@layout/app_bar">
             </include>
-            <ImageButton
-                android:id="@+id/add_series"
-                android:visibility="invisible"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_below="@id/toolbar"
-                android:layout_alignRight="@id/toolbar"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/ic_tick"
-                android:background="@drawable/fab"
-                android:layout_marginTop="-30dp"/>
         </RelativeLayout>
         <ScrollView
             android:layout_width="match_parent"
@@ -55,20 +43,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="More"/>
-                <!--<TextView
-                    android:id="@+id/episode_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Episodes"
-                    android:layout_gravity="center"
-                    android:textColor="#000"
-                    android:textStyle="bold"/>
-                    <ListView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/listView"
-                        android:layout_gravity="center"/>-->
             </LinearLayout>
         </ScrollView>
 </LinearLayout>
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_tick"
+        android:visibility="invisible"
+        fab:fab_colorNormal="@color/primary"
+        fab:fab_colorPressed="@color/primary_dark"
+        fab:fab_colorRipple="@color/primary_dark" />
+</FrameLayout>

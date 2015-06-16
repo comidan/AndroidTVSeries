@@ -35,16 +35,6 @@
             android:layout_height="wrap_content">
             <include android:id="@+id/toolbar" layout="@layout/app_bar">
             </include>
-            <ImageButton
-                android:id="@+id/add_series"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_alignRight="@id/toolbar"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/fab_ic_add"
-                android:layout_below="@id/toolbar"
-                android:layout_marginTop="-30dp"
-                android:background="@drawable/fab"/>
         </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>

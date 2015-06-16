@@ -23,6 +23,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.melnykov.fab.FloatingActionButton;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Actor;
@@ -61,12 +63,12 @@ public class SeriesActivity extends ActionBarActivity
         boolean add=extras.getBoolean("ADD");
         if(!add&&extras.getBoolean("IS_SEARCHED"))
         {
-            ImageButton addSeries=(ImageButton)findViewById(R.id.add_series);
-            addSeries.setVisibility(View.VISIBLE);
-            addSeries.setOnClickListener(new View.OnClickListener() {
+            FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(SeriesActivity.this,"Saving your TV Series",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SeriesActivity.this, "Saving your TV Series", Toast.LENGTH_SHORT).show();
                     new DownloadEpisodes().execute();
                 }
             });

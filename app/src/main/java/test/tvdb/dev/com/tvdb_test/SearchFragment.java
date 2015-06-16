@@ -69,25 +69,6 @@ public class SearchFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             tvDB=new TheTVDBApi("2C8BD989F33B0C84");
-
-            TraktV2 trakt = new TraktV2();
-            trakt.setApiKey("ebd4307c9eb9a7afcf922ac13f6b6ea95bede7784c4fd067ce3916991b955986");
-            trakt.setAccessToken("14c085f8ea2d0f4c061f8cde34f7dd8198402dd33e3559655ef2098175799886");
-            try
-            {
-                List<Show> shows=trakt.recommendations().shows(Extended.FULL);
-                for(int i=0;i<shows.size();i++)
-                    System.out.println(shows.get(i).ids.tvdb);
-            }
-            catch(OAuthUnauthorizedException exc)
-            {
-                exc.printStackTrace();
-            }
-            catch (RetrofitError e)
-            {
-                e.printStackTrace();
-            }
-
             return null;
         }
 
