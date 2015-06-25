@@ -54,6 +54,7 @@ public class EpisodesAdapter extends BaseExpandableListAdapter
         final View rowView = inflater.inflate(R.layout.episode_row, parent, false);
         TextView textView = (TextView) rowView.findViewById(R.id.episode_label);
         CheckBox checkBox = (CheckBox) rowView.findViewById(R.id.episode_seen);
+        TextView textView1 = (TextView) rowView.findViewById(R.id.episode_number);
         checkBox.setChecked(watches.get(groupPosition).get(childPosition));
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -63,6 +64,7 @@ public class EpisodesAdapter extends BaseExpandableListAdapter
             }
         });
         textView.setText(fullValues.get(groupPosition).getEpisodesList().get(childPosition).getEpisodeName());
+        textView1.setText(fullValues.get(groupPosition).getEpisode(childPosition+1).getEpisodeNumber()+"");
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
