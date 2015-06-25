@@ -10,6 +10,8 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.TvDbException;
 import com.omertron.thetvdbapi.model.Episode;
@@ -143,6 +145,11 @@ public class EpisodesAdapter extends BaseExpandableListAdapter
         public FetchEpisode(View view)
         {
             title=((TextView)view.findViewById(R.id.episode_label)).getText().toString();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(context,"Loading...",Toast.LENGTH_SHORT).show();
         }
 
         @Override

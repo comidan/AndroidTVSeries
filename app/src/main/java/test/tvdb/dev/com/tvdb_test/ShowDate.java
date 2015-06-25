@@ -54,7 +54,7 @@ public class ShowDate
             metaData.full=false;
         metaData.season=toBeSeen.season;
         metaData.index=toBeSeen.episode;
-        if(tmpSeasons.get(0).getSeasonNumber()==0)
+        if(tmpSeasons.get(tmpSeasons.size()-1).getSeasonNumber()==0)
             metaData.seasonOffset=1;
         else
             metaData.seasonOffset=0;

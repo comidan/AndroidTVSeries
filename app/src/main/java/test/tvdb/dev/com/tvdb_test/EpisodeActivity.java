@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -81,33 +82,47 @@ public class EpisodeActivity extends ActionBarActivity
             String[] splitDate=episode.getFirstAired().split("-");
             Date currentDate = new Date();
             Calendar episodeDate = Calendar.getInstance();
-            episodeDate.set(Integer.parseInt(splitDate[0]), Integer.parseInt(splitDate[1]) - 1, Integer.parseInt(splitDate[2]));
-            if (currentDate.compareTo(episodeDate.getTime()) < 0)
-                outputDate = "Next air on ";
-            else
-                outputDate = "Aired on ";
-            outputDate += splitDate[2] + "/" + splitDate[1] + "/" + splitDate[0];
+            try {
+                episodeDate.set(Integer.parseInt(splitDate[0]), Integer.parseInt(splitDate[1]) - 1, Integer.parseInt(splitDate[2]));
+                if (currentDate.compareTo(episodeDate.getTime()) < 0)
+                    outputDate = "Next air on ";
+                else
+                    outputDate = "Aired on ";
+                outputDate += splitDate[2] + "/" + splitDate[1] + "/" + splitDate[0];
+            }
+            catch(NumberFormatException exc)
+            {
+                //no date present
+                outputDate="";
+            }
             return image;
         }
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            ((ImageView)findViewById(R.id.poster_episode)).setImageBitmap(bitmap);
-            ((TextView)findViewById(R.id.description_episode)).setText(episode.getOverview());
-            ((TextView)findViewById(R.id.episode_date)).setText(outputDate);
-            //((TextView)findViewById(R.id.episode_rating)).setText("Rated "+episode.getRating());
-            PieGraph pg = (PieGraph)findViewById(R.id.graph);
-            pg.setThickness(20);
-            PieSlice slice=new PieSlice();
-            slice.setColor(Color.WHITE);
-            float tmp_rating;
-            slice.setValue(tmp_rating=Float.parseFloat(episode.getRating()));
-            pg.addSlice(slice);
-            PieSlice _slice=new PieSlice();
-            _slice.setColor(Color.parseColor("#00FFFFFF"));
-            _slice.setValue(11-tmp_rating);
-            pg.addSlice(_slice);
-            ((TextView)findViewById(R.id.textView)).setText(episode.getRating()+"/10");
+            ((ImageView) findViewById(R.id.poster_episode)).setImageBitmap(bitmap);
+            ((TextView) findViewById(R.id.description_episode)).setText(episode.getOverview());
+            ((TextView) findViewById(R.id.episode_date)).setText(outputDate);
+            try {
+                PieGraph pg = (PieGraph) findViewById(R.id.graph);
+                pg.setThickness(20);
+                PieSlice slice = new PieSlice();
+                slice.setColor(Color.WHITE);
+                float tmp_rating = Float.parseFloat(episode.getRating());
+                slice.setValue(tmp_rating);
+                pg.addSlice(slice);
+                PieSlice _slice = new PieSlice();
+                _slice.setColor(Color.parseColor("#00FFFFFF"));
+                _slice.setValue(11 - tmp_rating);
+                pg.addSlice(_slice);
+                ((TextView) findViewById(R.id.textView)).setText(episode.getRating() + "/10");
+            }
+            catch(NumberFormatException exc)
+            {
+                //no rating detected
+                PieGraph pg = (PieGraph) findViewById(R.id.graph);
+                pg.setVisibility(View.GONE);
+            }
         }
     }
 }
