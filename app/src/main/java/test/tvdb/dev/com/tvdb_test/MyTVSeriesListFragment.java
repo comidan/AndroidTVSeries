@@ -151,6 +151,7 @@ public class MyTVSeriesListFragment extends Fragment
                     SharedPreferences preferences = context.getPreferences(Activity.MODE_PRIVATE);
                     String timeTmp;
                     if (!(timeTmp = tvDB.getWeeklyUpdates().getTime()).equals(preferences.getString("TIME", new Date().toString()))) {
+                        publishProgress();
                         isUpdated = true;
                         preferences.edit().putString("TIME", timeTmp).apply();
                         List<SeriesUpdate> updateList = tvDB.getWeeklyUpdates().getSeriesUpdates();
@@ -170,9 +171,13 @@ public class MyTVSeriesListFragment extends Fragment
         }
 
         @Override
+        protected void onProgressUpdate(Void... values) {
+            Toast.makeText(getActivity(),"Updating your TV Series...",Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
         protected void onPostExecute(Void aVoid) {
             if(isUpdated&&context!=null) {
-                Toast.makeText(getActivity(),"Updating your TV Series...",Toast.LENGTH_SHORT).show();
                 customGridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_cell, series, null, deleteSeriesHandler);
                 gridView.setAdapter(customGridAdapter);
             }
