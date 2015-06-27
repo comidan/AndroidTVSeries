@@ -22,7 +22,7 @@ public class MainActivity extends ActionBarActivity
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private Toolbar toolbar;
-    private Handler searchHandler;
+    Handler searchHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

@@ -39,7 +39,7 @@ public class MyTVSeriesListFragment extends Fragment
     private ArrayList<MyTVSeries> series;
     private TheTVDBApi tvDB;
     private Handler finishLoadingHandler,deleteSeriesHandler;
-    private static Handler handler;
+    private Handler handler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -92,7 +92,7 @@ public class MyTVSeriesListFragment extends Fragment
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        handler.sendEmptyMessage(0);
+                        ((MainActivity)getActivity()).searchHandler.sendEmptyMessage(0);
                     }
                 });
             } catch (NullPointerException exc) {
